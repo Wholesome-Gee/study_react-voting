@@ -2,6 +2,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { darkTheme } from "./theme";
+import { RecoilRoot } from "recoil";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
@@ -13,6 +14,7 @@ body {
   font-family: "Nanum Gothic", sans-serif;
   font-size: 1rem;
   line-height: 1;
+  width: 100vw;
 }
 ol, ul {
   list-style: none;
@@ -52,7 +54,10 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <ThemeProvider theme={darkTheme}>
-    <App />
-  </ThemeProvider>
+  <RecoilRoot>
+    <ThemeProvider theme={darkTheme}>
+      <GlobalStyle />
+      <App />
+    </ThemeProvider>
+  </RecoilRoot>
 );
