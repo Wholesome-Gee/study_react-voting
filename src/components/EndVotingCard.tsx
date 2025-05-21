@@ -82,7 +82,12 @@ interface IProps {
 function EndVotingCard({ index }: IProps) {
   const endVotingList = useRecoilValue(endVotingsState).slice(0, 3);
   const endVoting = endVotingList[index];
-  console.log(endVotingList); // 여기서 득표수 젤 높은 option이 맨처음오도록 설정해야함
+  const sortedEndVoting = [...endVotingList[index].options].sort((a, b) => b.count - a.count);
+
+  console.log("1", endVotingList);
+  console.log("2", endVoting);
+  console.log("3", sortedEndVoting);
+
   return (
     <VotingCard>
       <Title>
@@ -92,24 +97,24 @@ function EndVotingCard({ index }: IProps) {
       <Contents>
         <Left>
           <Medal>🥇</Medal>
-          <OptionName>가나다라마바사아자</OptionName>
+          <OptionName>{sortedEndVoting[0].name}</OptionName>
           <Results>
-            <p>득표수: 500표</p>
-            <p>득표율: 50%</p>
+            <p>득표수: {sortedEndVoting[0].count}표</p>
+            <p>득표율: {Math.floor((sortedEndVoting[0].count / endVoting.total) * 1000) / 10}%</p>
           </Results>
         </Left>
         <Right>
           <div>
             <span>🥈</span>
-            <span>가나다라마바사아자</span>
-            <span>득표수: 300표</span>
-            <span>득표율: 30%</span>
+            <span>{sortedEndVoting[1].name}</span>
+            <span>득표수: {sortedEndVoting[1].count}표</span>
+            <span>득표율: {Math.floor((sortedEndVoting[1].count / endVoting.total) * 1000) / 10}%</span>
           </div>
           <div>
             <span>🥉</span>
-            <span>가나다라마바사아자</span>
-            <span>득표수: 200표</span>
-            <span>득표율: 20%</span>
+            <span>{sortedEndVoting[2].name}</span>
+            <span>득표수: {sortedEndVoting[2].count}표</span>
+            <span>득표율: {Math.floor((sortedEndVoting[2].count / endVoting.total) * 1000) / 10}%</span>
           </div>
         </Right>
       </Contents>
