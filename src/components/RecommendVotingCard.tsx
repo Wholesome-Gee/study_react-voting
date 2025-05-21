@@ -30,11 +30,10 @@ const Badges = styled.div`
   margin-bottom: 0.5rem;
   display: flex;
 `;
-const Badge = styled.span<{ isSecret: boolean }>`
+const Badge = styled.span<{ $isSecret: boolean }>`
   padding: 4px 8px;
   border-radius: 6px;
-  background-color: ${(props) =>
-    props.isSecret ? props.theme.pointColor.sub : props.theme.pointColor.main};
+  background-color: ${(props) => (props.$isSecret ? props.theme.pointColor.sub : props.theme.pointColor.main)};
 `;
 const Period = styled.div`
   margin-bottom: 0.4rem;
@@ -76,9 +75,9 @@ function Card({ isHot, index }: IProps) {
               <Title>{HotVotings[index].subject}</Title>
               <Badges>
                 {HotVotings[index].isSecret ? (
-                  <Badge isSecret={HotVotings[index].isSecret}>비밀투표</Badge>
+                  <Badge $isSecret={HotVotings[index].isSecret}>비밀투표</Badge>
                 ) : (
-                  <Badge isSecret={HotVotings[index].isSecret}>공개투표</Badge>
+                  <Badge $isSecret={HotVotings[index].isSecret}>공개투표</Badge>
                 )}
               </Badges>
             </ContentsRow>
@@ -101,13 +100,9 @@ function Card({ isHot, index }: IProps) {
               <Title>{OtherVotings[index].subject}</Title>
               <Badges>
                 {OtherVotings[index].isSecret ? (
-                  <Badge isSecret={OtherVotings[index].isSecret}>
-                    비밀투표
-                  </Badge>
+                  <Badge $isSecret={OtherVotings[index].isSecret}>비밀투표</Badge>
                 ) : (
-                  <Badge isSecret={OtherVotings[index].isSecret}>
-                    공개투표
-                  </Badge>
+                  <Badge $isSecret={OtherVotings[index].isSecret}>공개투표</Badge>
                 )}
               </Badges>
             </ContentsRow>

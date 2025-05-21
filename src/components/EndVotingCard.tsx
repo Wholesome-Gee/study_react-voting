@@ -84,10 +84,6 @@ function EndVotingCard({ index }: IProps) {
   const endVoting = endVotingList[index];
   const sortedEndVoting = [...endVotingList[index].options].sort((a, b) => b.count - a.count);
 
-  console.log("1", endVotingList);
-  console.log("2", endVoting);
-  console.log("3", sortedEndVoting);
-
   return (
     <VotingCard>
       <Title>

@@ -3,12 +3,14 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { MdClose } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   padding: 1rem 4rem;
   width: 100%;
   background-color: teal;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   font-size: 1.5rem;
   font-weight: 600;
@@ -99,6 +101,7 @@ const Menues = styled.div`
     color: ${(props) => props.theme.pointColor.main};
   }
 `;
+const Logout = styled.div``;
 
 const MenuContainerVariant = {
   start: { opacity: 0 },
@@ -115,6 +118,11 @@ export default function Navigation() {
   function toggleSetMenu() {
     setClickMenu((prev) => !prev);
   }
+  function clickLogout() {
+    localStorage.removeItem("id");
+    localStorage.removeItem("pw");
+    window.location.reload();
+  }
   return (
     <>
       <Container>
@@ -124,10 +132,22 @@ export default function Navigation() {
           </MenuIcon>
           메뉴
         </Menu>
-        <Logo>VOTING</Logo>
+        <Logo>
+          <Link to="/">VOTING</Link>
+        </Logo>
         <LoginBox>
-          <Join>회원가입</Join>
-          <Login>로그인</Login>
+          {localStorage.getItem("id") ? (
+            <Logout onClick={clickLogout}>로그아웃</Logout>
+          ) : (
+            <>
+              <Join>
+                <Link to="/">회원가입</Link>
+              </Join>
+              <Login>
+                <Link to="/login">로그인</Link>
+              </Login>
+            </>
+          )}
         </LoginBox>
       </Container>
       <AnimatePresence>
@@ -147,9 +167,7 @@ export default function Navigation() {
               animate="end"
               exit="exit"
               transition={{ type: "tween", duration: 0.2 }}
-              onClick={(event: React.MouseEvent<HTMLDivElement>) =>
-                event.stopPropagation()
-              }
+              onClick={(event: React.MouseEvent<HTMLDivElement>) => event.stopPropagation()}
             >
               <CloseBtn>
                 <MdClose onClick={toggleSetMenu} />

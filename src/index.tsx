@@ -14,7 +14,9 @@ body {
   font-family: "Nanum Gothic", sans-serif;
   font-size: 1rem;
   line-height: 1;
-  width: 100vw;
+  width: 100%;
+  color: ${(props) => props.theme.textColor.text};
+  background-color: ${(props) => props.theme.bgColor};
 }
 ol, ul {
   list-style: none;
@@ -49,9 +51,7 @@ ul {
 }
 `;
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
   <RecoilRoot>

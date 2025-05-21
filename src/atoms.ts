@@ -8,7 +8,7 @@ interface Options {
   image: string;
 }
 
-interface Votings {
+interface IVotings {
   id: number;
   subject: string;
   start: string;
@@ -20,7 +20,12 @@ interface Votings {
   options: Options[];
 }
 
-export const votingsState = atom<Votings[]>({
+interface IUsers {
+  id: string;
+  pw: string;
+}
+
+export const votingsState = atom<IVotings[]>({
   key: "votings",
   default: [
     {
@@ -77,7 +82,7 @@ export const votingsState = atom<Votings[]>({
   ],
 });
 
-export const sortedByTotalVotings = selector<Votings[]>({
+export const sortedByTotalVotings = selector<IVotings[]>({
   key: "votingsSelector",
   get: ({ get }) => {
     const votings = get(votingsState);
@@ -86,7 +91,7 @@ export const sortedByTotalVotings = selector<Votings[]>({
   //외부 set은 parameter로 value를 받고 내부 set은 atom을 value로 바꾼다.
 });
 
-export const endVotingsState = atom<Votings[]>({
+export const endVotingsState = atom<IVotings[]>({
   key: "endVotings",
   default: [
     {
@@ -141,4 +146,17 @@ export const endVotingsState = atom<Votings[]>({
       ],
     },
   ],
+});
+
+export const usersState = atom<IUsers[]>({
+  key: "users",
+  default: [{ id: "test1", pw: "1234" }],
+});
+
+export const usersSelector = selector<IUsers[]>({
+  key: "usersSelector",
+  get: ({ get }) => {
+    return get(usersState);
+  },
+  set: ({ set }, newUser) => set(usersState, newUser),
 });

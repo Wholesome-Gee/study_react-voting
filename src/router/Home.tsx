@@ -2,15 +2,14 @@ import styled from "styled-components";
 import Card from "../components/RecommendVotingCard";
 import EndVotingCard from "../components/EndVotingCard";
 import { useRecoilValue } from "recoil";
-import { endVotingsState, sortedByTotalVotings, votingsState } from "../atoms";
+import { endVotingsState, sortedByTotalVotings } from "../atoms";
+import Navigation from "../components/Navigation";
 
 const Background = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: ${(props) => props.theme.textColor.text};
-  background-color: ${(props) => props.theme.bgColor};
 `;
 const Slide = styled.div`
   width: 100%;
@@ -95,55 +94,57 @@ const EndVotings = styled.div`
 function Home() {
   const sortedVotingList = useRecoilValue(sortedByTotalVotings);
   const endVotintgList = useRecoilValue(endVotingsState).slice(0, 3);
-  console.log(endVotintgList);
-
+  console.log(localStorage.getItem("id"));
   return (
-    <Background>
-      <Slide></Slide>
-      <Banner>
-        <div>
-          <span>투표 등록하기</span>
-          <button>Click!</button>
-        </div>
-      </Banner>
-      <Container>
-        <Recommend>
-          <RecommnedSection>
+    <>
+      <Navigation />
+      <Background>
+        <Slide></Slide>
+        <Banner>
+          <div>
+            <span>투표 등록하기</span>
+            <button>Click!</button>
+          </div>
+        </Banner>
+        <Container>
+          <Recommend>
+            <RecommnedSection>
+              <SectionTItle>
+                <span>요즘 HOT한 투표 🔥</span>
+                <span>전체보기</span>
+              </SectionTItle>
+              <VotingCards>
+                {sortedVotingList.map((voting, index) => (
+                  <Card isHot={true} index={index} key={voting.id} />
+                ))}
+              </VotingCards>
+            </RecommnedSection>
+            <RecommnedSection>
+              <SectionTItle>
+                <span>이런 투표는 어떄요? 😊</span>
+                <span>전체보기</span>
+              </SectionTItle>
+              <VotingCards>
+                {sortedVotingList.map((voting, index) => (
+                  <Card isHot={false} index={index} key={voting.id} />
+                ))}
+              </VotingCards>
+            </RecommnedSection>
+          </Recommend>
+          <EndVotingSection>
             <SectionTItle>
-              <span>요즘 HOT한 투표 🔥</span>
+              <span>지난 투표 결과 보기 🔍</span>
               <span>전체보기</span>
             </SectionTItle>
-            <VotingCards>
-              {sortedVotingList.map((voting, index) => (
-                <Card isHot={true} index={index} key={voting.id} />
+            <EndVotings>
+              {endVotintgList.map((voting, index) => (
+                <EndVotingCard index={index} key={voting.id} />
               ))}
-            </VotingCards>
-          </RecommnedSection>
-          <RecommnedSection>
-            <SectionTItle>
-              <span>이런 투표는 어떄요? 😊</span>
-              <span>전체보기</span>
-            </SectionTItle>
-            <VotingCards>
-              {sortedVotingList.map((voting, index) => (
-                <Card isHot={false} index={index} key={voting.id} />
-              ))}
-            </VotingCards>
-          </RecommnedSection>
-        </Recommend>
-        <EndVotingSection>
-          <SectionTItle>
-            <span>지난 투표 결과 보기 🔍</span>
-            <span>전체보기</span>
-          </SectionTItle>
-          <EndVotings>
-            {endVotintgList.map((voting, index) => (
-              <EndVotingCard index={index} key={voting.id} />
-            ))}
-          </EndVotings>
-        </EndVotingSection>
-      </Container>
-    </Background>
+            </EndVotings>
+          </EndVotingSection>
+        </Container>
+      </Background>
+    </>
   );
 }
 
