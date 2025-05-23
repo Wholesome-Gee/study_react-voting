@@ -4,6 +4,7 @@ import EndVotingCard from "../components/EndVotingCard";
 import { useRecoilValue } from "recoil";
 import { endVotingsState, sortedByTotalVotings } from "../atoms";
 import Navigation from "../components/Navigation";
+import { Link } from "react-router-dom";
 
 const Background = styled.div`
   width: 100%;
@@ -14,7 +15,7 @@ const Background = styled.div`
 const Slide = styled.div`
   width: 100%;
   height: 550px;
-  background-color: black;
+  background-color: ${(props) => props.theme.bgColor};
 `;
 const Banner = styled.div`
   width: 100%;
@@ -102,7 +103,9 @@ function Home() {
         <Slide></Slide>
         <Banner>
           <div>
-            <span>투표 등록하기</span>
+            <Link to={"/votings/regist"}>
+              <span>투표 등록하기</span>
+            </Link>
             <button>Click!</button>
           </div>
         </Banner>

@@ -8,14 +8,13 @@ import { Link } from "react-router-dom";
 const Container = styled.div`
   padding: 1rem 4rem;
   width: 100%;
-  background-color: teal;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 1.5rem;
   font-weight: 600;
   color: ${(props) => props.theme.textColor.text};
-  background-color: ${(props) => props.theme.bgColor};
+  background-color: black;
   & > div {
     width: 33%;
     transition: all 0.2s ease-in-out;
