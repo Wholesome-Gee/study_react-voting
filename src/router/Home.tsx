@@ -105,8 +105,8 @@ function Home() {
           <div>
             <Link to={"/votings/regist"}>
               <span>투표 등록하기</span>
-            </Link>
             <button>Click!</button>
+            </Link>
           </div>
         </Banner>
         <Container>

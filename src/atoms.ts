@@ -25,6 +25,10 @@ interface IUsers {
   pw: string;
 }
 
+export const newVoting = atom<IVotings>({
+  key: "newVoting",
+});
+
 export const votingsState = atom<IVotings[]>({
   key: "votings",
   default: [
@@ -83,7 +87,7 @@ export const votingsState = atom<IVotings[]>({
 });
 
 export const sortedByTotalVotings = selector<IVotings[]>({
-  key: "votingsSelector",
+  key: "sortedVotingsSelector",
   get: ({ get }) => {
     const votings = get(votingsState);
     return [...votings].sort((a, b) => b.total - a.total);
@@ -159,4 +163,12 @@ export const usersSelector = selector<IUsers[]>({
     return get(usersState);
   },
   set: ({ set }, newUser) => set(usersState, newUser),
+});
+
+export const votingsSelector = selector<IVotings[]>({
+  key: "votingsSelector",
+  get: ({ get }) => {
+    return get(votingsState);
+  },
+  set: ({ set }, newVoting) => set(votingsState, newVoting),
 });

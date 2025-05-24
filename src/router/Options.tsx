@@ -1,7 +1,7 @@
 import React from "react";
 
-function Regist() {
+function Options() {
   return <div></div>;
 }
 
-export default Regist;
+export default Options;
