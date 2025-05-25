@@ -1,15 +1,15 @@
 import { atom, selector } from "recoil";
 
-interface Options {
-  id: number;
+export interface IOption {
+  id: string;
   index: number;
   name: string;
   count: number;
   image: string;
 }
 
-interface IVotings {
-  id: number;
+export interface IVoting {
+  id: string;
   subject: string;
   start: string;
   end: string;
@@ -17,7 +17,7 @@ interface IVotings {
   owner: string;
   isSecret: boolean;
   isEnd: boolean;
-  options: Options[];
+  options: IOption[];
 }
 
 interface IUsers {
@@ -25,15 +25,15 @@ interface IUsers {
   pw: string;
 }
 
-export const newVoting = atom<IVotings>({
+export const newVoting = atom<IVoting>({
   key: "newVoting",
 });
 
-export const votingsState = atom<IVotings[]>({
+export const votingsState = atom<IVoting[]>({
   key: "votings",
   default: [
     {
-      id: 1001,
+      id: "1001",
       subject: "한국인이 가장 좋아하는 음식",
       start: "2025-05-01",
       end: "2025-05-05",
@@ -42,15 +42,15 @@ export const votingsState = atom<IVotings[]>({
       isSecret: true,
       isEnd: false,
       options: [
-        { id: 1001, index: 1, name: "떡볶이", count: 2, image: "" },
-        { id: 1002, index: 2, name: "김치찌개", count: 3, image: "" },
-        { id: 1003, index: 3, name: "삼겹살", count: 2, image: "" },
-        { id: 1004, index: 4, name: "마라탕", count: 1, image: "" },
-        { id: 1005, index: 5, name: "패스트푸드", count: 2, image: "" },
+        { id: "1001", index: 1, name: "떡볶이", count: 2, image: "" },
+        { id: "1002", index: 2, name: "김치찌개", count: 3, image: "" },
+        { id: "1003", index: 3, name: "삼겹살", count: 2, image: "" },
+        { id: "1004", index: 4, name: "마라탕", count: 1, image: "" },
+        { id: "1005", index: 5, name: "패스트푸드", count: 2, image: "" },
       ],
     },
     {
-      id: 1002,
+      id: "1002",
       subject: "가장 선호하는 스포츠브랜드",
       start: "2025-04-30",
       end: "2025-06-10",
@@ -59,15 +59,15 @@ export const votingsState = atom<IVotings[]>({
       isSecret: false,
       isEnd: false,
       options: [
-        { id: 1001, index: 1, name: "아디다스", count: 4, image: "" },
-        { id: 1002, index: 2, name: "나이키", count: 6, image: "" },
-        { id: 1003, index: 3, name: "언더아머", count: 4, image: "" },
-        { id: 1004, index: 4, name: "프로스펙스", count: 2, image: "" },
-        { id: 1005, index: 5, name: "아식스", count: 4, image: "" },
+        { id: "1001", index: 1, name: "아디다스", count: 4, image: "" },
+        { id: "1002", index: 2, name: "나이키", count: 6, image: "" },
+        { id: "1003", index: 3, name: "언더아머", count: 4, image: "" },
+        { id: "1004", index: 4, name: "프로스펙스", count: 2, image: "" },
+        { id: "1005", index: 5, name: "아식스", count: 4, image: "" },
       ],
     },
     {
-      id: 1003,
+      id: "1003",
       subject: "세현고등학교 3학년 2반 수학여행장소",
       start: "2025-05-03",
       end: "2025-05-31",
@@ -76,17 +76,17 @@ export const votingsState = atom<IVotings[]>({
       isSecret: true,
       isEnd: false,
       options: [
-        { id: 1001, index: 1, name: "철수", count: 3, image: "" },
-        { id: 1002, index: 2, name: "짱구", count: 2, image: "" },
-        { id: 1003, index: 3, name: "훈이", count: 5, image: "" },
-        { id: 1004, index: 4, name: "맹구", count: 1, image: "" },
-        { id: 1005, index: 5, name: "유리", count: 4, image: "" },
+        { id: "1001", index: 1, name: "철수", count: 3, image: "" },
+        { id: "1002", index: 2, name: "짱구", count: 2, image: "" },
+        { id: "1003", index: 3, name: "훈이", count: 5, image: "" },
+        { id: "1004", index: 4, name: "맹구", count: 1, image: "" },
+        { id: "1005", index: 5, name: "유리", count: 4, image: "" },
       ],
     },
   ],
 });
 
-export const sortedByTotalVotings = selector<IVotings[]>({
+export const sortedByTotalVotings = selector<IVoting[]>({
   key: "sortedVotingsSelector",
   get: ({ get }) => {
     const votings = get(votingsState);
@@ -95,11 +95,11 @@ export const sortedByTotalVotings = selector<IVotings[]>({
   //외부 set은 parameter로 value를 받고 내부 set은 atom을 value로 바꾼다.
 });
 
-export const endVotingsState = atom<IVotings[]>({
+export const endVotingsState = atom<IVoting[]>({
   key: "endVotings",
   default: [
     {
-      id: 2003,
+      id: "2003",
       subject: "올 시즌 EPL 우승팀 예측",
       start: "2025-04-03",
       end: "2025-04-31",
@@ -108,15 +108,15 @@ export const endVotingsState = atom<IVotings[]>({
       isSecret: true,
       isEnd: true,
       options: [
-        { id: 1001, index: 1, name: "첼시", count: 70, image: "" },
-        { id: 1002, index: 2, name: "맨유", count: 10, image: "" },
-        { id: 1003, index: 3, name: "맨시티", count: 30, image: "" },
-        { id: 1004, index: 4, name: "아스날", count: 40, image: "" },
-        { id: 1005, index: 5, name: "리버풀", count: 50, image: "" },
+        { id: "1001", index: 1, name: "첼시", count: 70, image: "" },
+        { id: "1002", index: 2, name: "맨유", count: 10, image: "" },
+        { id: "1003", index: 3, name: "맨시티", count: 30, image: "" },
+        { id: "1004", index: 4, name: "아스날", count: 40, image: "" },
+        { id: "1005", index: 5, name: "리버풀", count: 50, image: "" },
       ],
     },
     {
-      id: 2001,
+      id: "2001",
       subject: "워크샵 장소 투표",
       start: "2025-04-01",
       end: "2025-04-05",
@@ -125,15 +125,15 @@ export const endVotingsState = atom<IVotings[]>({
       isSecret: false,
       isEnd: true,
       options: [
-        { id: 1001, index: 1, name: "서울", count: 10, image: "" },
-        { id: 1002, index: 2, name: "구미", count: 20, image: "" },
-        { id: 1003, index: 3, name: "부산", count: 30, image: "" },
-        { id: 1004, index: 4, name: "제주", count: 40, image: "" },
-        { id: 1005, index: 5, name: "대전", count: 50, image: "" },
+        { id: "1001", index: 1, name: "서울", count: 10, image: "" },
+        { id: "1002", index: 2, name: "구미", count: 20, image: "" },
+        { id: "1003", index: 3, name: "부산", count: 30, image: "" },
+        { id: "1004", index: 4, name: "제주", count: 40, image: "" },
+        { id: "1005", index: 5, name: "대전", count: 50, image: "" },
       ],
     },
     {
-      id: 2002,
+      id: "2002",
       subject: "우리집 강아지 이름좀 골라주세요ㅠㅠ",
       start: "2025-03-30",
       end: "2025-03-10",
@@ -142,11 +142,11 @@ export const endVotingsState = atom<IVotings[]>({
       isSecret: true,
       isEnd: true,
       options: [
-        { id: 1001, index: 1, name: "바둑", count: 25, image: "" },
-        { id: 1002, index: 2, name: "콩이", count: 15, image: "" },
-        { id: 1003, index: 3, name: "보리", count: 45, image: "" },
-        { id: 1004, index: 4, name: "뽀삐", count: 5, image: "" },
-        { id: 1005, index: 5, name: "해리", count: 30, image: "" },
+        { id: "1001", index: 1, name: "바둑", count: 25, image: "" },
+        { id: "1002", index: 2, name: "콩이", count: 15, image: "" },
+        { id: "1003", index: 3, name: "보리", count: 45, image: "" },
+        { id: "1004", index: 4, name: "뽀삐", count: 5, image: "" },
+        { id: "1005", index: 5, name: "해리", count: 30, image: "" },
       ],
     },
   ],
@@ -165,7 +165,7 @@ export const usersSelector = selector<IUsers[]>({
   set: ({ set }, newUser) => set(usersState, newUser),
 });
 
-export const votingsSelector = selector<IVotings[]>({
+export const votingsSelector = selector<IVoting[]>({
   key: "votingsSelector",
   get: ({ get }) => {
     return get(votingsState);

@@ -3,8 +3,9 @@ import Navigation from "../components/Navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { usersSelector, votingsSelector } from "../atoms";
+import { IOption, IVoting, votingsSelector } from "../atoms";
 
 const Container = styled.div`
   margin: 0 auto;
@@ -48,6 +49,7 @@ const InputBox = styled.div`
   margin-bottom: 1rem;
   padding: 0 30px;
   display: flex;
+  justify-content: center;
   align-items: center;
   position: relative;
   & > p {
@@ -69,6 +71,16 @@ const InputBox = styled.div`
     font-size: 0.9rem;
   }
 `;
+const Labels = styled.div`
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  label {
+    padding: 8px 0px 8px 8px;
+  }
+`;
 const AddBtn = styled.div`
   margin-top: 1rem;
   width: 35px;
@@ -81,7 +93,7 @@ const AddBtn = styled.div`
   font-size: 2rem;
   background-color: ${(props) => props.theme.textColor.text};
 `;
-const DeleteBtn = styled.div<{ id: number }>`
+const DeleteBtn = styled.div<{ id: string }>`
   margin-right: 8px;
   width: 20px;
   height: 20px;
@@ -120,17 +132,62 @@ const PrevBtn = styled(NextBtn)`
 `;
 
 export default function Votings() {
-  const [pageNum, setPageNum] = useState(0);
-  const [optionNum, setOptionNum] = useState(3);
-  const [options, setOptions] = useState<number[]>([1, 2]);
-  const [deleteOption, setDeleteOption] = useState<number[]>([]);
+  const [pageNum, setPageNum] = useState(0); // 0 : 투표제목입력 page // 1: 투표항목입력page // 2: 비밀투표선택page // 3: 완료페이지
+  const [voting, setVoting] = useState<IVoting>(); //
+  const [options, setOptions] = useState<IOption[]>([]);
+  const [count, setCount] = useState(3);
+  const [optionCount, setOptionCount] = useState<number[]>([1, 2]);
+  const [inputNames, setInputNames] = useState<string[]>(["option1", "option2"]);
+  const [isSecret, setIsSecret] = useState(false);
+  const [votingList, setVotingList] = useRecoilState(votingsSelector);
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-  function success() {}
+
+  // 함수정의
+  function success(data: any) {
+    const optionKeys = Object.keys(data).filter((key) => key.includes("option")); // ['option1','option2',...]
+    const optionValues = Object.values(data).filter((value, index) => index !== 0) as string[]; // ['이재명','김문수','이준석']
+    const options = optionValues.map((value, index) => {
+      const option: IOption = { id: crypto.randomUUID(), index, name: value, count: 0, image: "" }; // {id:'random', index:0, name:'이재명', count:0, image:""}
+      return option;
+    });
+    setOptions(options); // [{id:'random', index:0, name:'이재명', count:0, image:""},{id:'random', index:1, name:'김문수', count:0, image:""},...]
+    // console.log(data); // {votingTitle: '1', option1: '1', option2: '2'}
+    // console.log(optionKeys, "-------", optionValues);
+    function startDate() {
+      const year = new Date().getFullYear();
+      const month = String(new Date().getMonth() + 1).padStart(2, "0");
+      const date = String(new Date().getDate()).padStart(2, "0");
+      return `${year}-${month}-${date}`;
+    }
+    function endDate() {
+      const today = new Date();
+      const after7days = new Date(today.setDate(today.getDate() + 7));
+      const year = after7days.getFullYear();
+      const month = String(after7days.getMonth() + 1).padStart(2, "0");
+      const date = String(after7days.getDate()).padStart(2, "0");
+      return `${year}-${month}-${date}`;
+    }
+    const newVoting = {
+      id: crypto.randomUUID(),
+      subject: data.votingTitle,
+      start: startDate(),
+      end: endDate(),
+      total: 0,
+      owner: "test1",
+      isSecret,
+      isEnd: false,
+      options,
+    };
+    setVoting(newVoting);
+    const newVotingList = [...votingList, newVoting];
+    setVotingList(newVotingList);
+    setPageNum((prev) => (prev === 3 ? 3 : prev + 1));
+  }
   function handleClickNextBtn(event: React.FormEvent<HTMLButtonElement>) {
     event.preventDefault();
     setPageNum((prev) => (prev === 3 ? 3 : prev + 1));
@@ -140,19 +197,33 @@ export default function Votings() {
     setPageNum((prev) => (prev === 0 ? 0 : prev - 1));
   }
   function handleClickAddBtn() {
-    setOptions([...options, optionNum]);
-    setOptionNum((num) => num + 1);
+    setInputNames([...inputNames, `option${count}`]);
+    setOptionCount([...optionCount, count]);
+    setCount((num) => num + 1);
+    // id: number;
+    // index: number;
+    // name: string;
+    // count: number;
+    // image: string;
   }
   function handleClickDeleteBtn(event: React.MouseEvent<HTMLDivElement>) {
-    const deleteTargetIndex = options.findIndex((item) => item === Number(event.currentTarget.id));
-    const copyOptions = [...options];
-    const copyDeleteOption = [...deleteOption];
-    copyOptions.splice(deleteTargetIndex, 1);
-    copyDeleteOption.push(Number(event.currentTarget.id));
-    setOptions(copyOptions);
+    /*
+     */
+    const newOptions = inputNames.filter((inputNames) => inputNames !== event.currentTarget.id);
+    setInputNames(newOptions);
+    const targetIndex = inputNames.findIndex((item) => item === event.currentTarget.id);
+    const newOptionCount = optionCount.filter((count, index) => index !== targetIndex);
+    setOptionCount(newOptionCount);
+    // console.log(optionCount);
+    // console.log(newOptionCount);
+    // const copyOptions = [...optionCount];
+    // const copyDeleteOption = [...deleteOption];
+    // copyOptions.splice(deleteTargetIndex, 1);
+    // copyDeleteOption.push(Number(event.currentTarget.id));
+    // setOptionCount(copyOptions);
+    // console.log(targetIndex);
     //
   }
-  console.log(watch());
 
   return (
     <>
@@ -175,20 +246,20 @@ export default function Votings() {
               <Step>
                 <StepTitle>STEP2. 투표 항목을 입력하세요.</StepTitle>
                 <StepContents>
-                  {options.map((number, index) => {
-                    const inputName = `option${number}Name`;
+                  {optionCount.map((number, index) => {
+                    const inputName = `option${number}`;
                     const value = watch(inputName) || "";
                     return (
-                      <>
-                        <InputBox key={number}>
-                          <DeleteBtn onClick={handleClickDeleteBtn} id={number}>
+                      <div key={number}>
+                        <InputBox>
+                          <DeleteBtn onClick={handleClickDeleteBtn} id={`option${number}`}>
                             -
                           </DeleteBtn>
                           <p>{index + 1}번 항목 : </p>
                           <input {...register(inputName)}></input>
                           <span>({value.length || "0"}/10자)</span>
                         </InputBox>
-                      </>
+                      </div>
                     );
                   })}
                 </StepContents>
@@ -199,18 +270,47 @@ export default function Votings() {
                 <StepTitle>STEP3. 비밀투표로 진행하시겠습니까?</StepTitle>
                 <StepContents>
                   <InputBox>
-                    <input {...register("votingTitle")} type="radio" name="secret"></input>
-                    <div>네</div>
-                    <input {...register("votingTitle")} type="radio" name="secret"></input>
-                    <div>아니요</div>
+                    <Labels>
+                      <input
+                        type="radio"
+                        name="secret"
+                        id="yes"
+                        onChange={() => {
+                          !isSecret && setIsSecret(true);
+                        }}
+                      ></input>
+                      <label htmlFor="yes">네</label>
+                    </Labels>
+                    <Labels>
+                      <input
+                        type="radio"
+                        name="secret"
+                        id="no"
+                        onChange={() => {
+                          isSecret && setIsSecret(false);
+                        }}
+                      ></input>
+                      <label htmlFor="no">아니요</label>
+                    </Labels>
                   </InputBox>
                 </StepContents>
               </Step>
             ) : null}
             <Btns>
-              {pageNum === 0 ? null : <PrevBtn onClick={handleClickPrevBtn}>이전</PrevBtn>}
+              {pageNum === 0 || pageNum === 3 ? null : <PrevBtn onClick={handleClickPrevBtn}>이전</PrevBtn>}
               {pageNum === 2 ? (
-                <NextBtn onClick={handleClickNextBtn}>등록</NextBtn>
+                <NextBtn
+                  onClick={() => {
+                    handleSubmit(success);
+                    // setPageNum((prev) => (prev === 3 ? 3 : prev + 1));
+                  }}
+                >
+                  등록
+                </NextBtn>
+              ) : pageNum === 3 ? (
+                <Link to="/">
+                  <NextBtn>메인으로</NextBtn>
+                </Link>
               ) : (
                 <NextBtn onClick={handleClickNextBtn}>다음</NextBtn>
               )}

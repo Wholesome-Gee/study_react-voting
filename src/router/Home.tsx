@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Card from "../components/RecommendVotingCard";
 import EndVotingCard from "../components/EndVotingCard";
 import { useRecoilValue } from "recoil";
-import { endVotingsState, sortedByTotalVotings } from "../atoms";
+import { endVotingsState, sortedByTotalVotings, votingsState } from "../atoms";
 import Navigation from "../components/Navigation";
 import { Link } from "react-router-dom";
 
@@ -95,7 +95,9 @@ const EndVotings = styled.div`
 function Home() {
   const sortedVotingList = useRecoilValue(sortedByTotalVotings);
   const endVotintgList = useRecoilValue(endVotingsState).slice(0, 3);
-  console.log(localStorage.getItem("id"));
+  const votingList = useRecoilValue(votingsState);
+  // console.log('localStorage.getItem("id") : ', localStorage.getItem("id"));
+  console.log("votingList : ", votingList);
   return (
     <>
       <Navigation />
@@ -105,7 +107,7 @@ function Home() {
           <div>
             <Link to={"/votings/regist"}>
               <span>투표 등록하기</span>
-            <button>Click!</button>
+              <button>Click!</button>
             </Link>
           </div>
         </Banner>
@@ -134,7 +136,7 @@ function Home() {
               </VotingCards>
             </RecommnedSection>
           </Recommend>
-          <EndVotingSection>
+          {/* <EndVotingSection>
             <SectionTItle>
               <span>지난 투표 결과 보기 🔍</span>
               <span>전체보기</span>
@@ -144,7 +146,7 @@ function Home() {
                 <EndVotingCard index={index} key={voting.id} />
               ))}
             </EndVotings>
-          </EndVotingSection>
+          </EndVotingSection> */}
         </Container>
       </Background>
     </>
