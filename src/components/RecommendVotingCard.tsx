@@ -62,9 +62,9 @@ interface IProps {
   index: number;
 }
 function Card({ isHot, index }: IProps) {
-  const VotingList = useRecoilValue(sortedByTotalVotings); // 투표수 높은순으로 정렬된 list
-  const HotVotings = [...VotingList].slice(0, 3); // 투표수 높은 voting 3개
-  const OtherVotings = [...VotingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
+  const votingList = useRecoilValue(sortedByTotalVotings); // 투표수 높은순으로 정렬된 list
+  const hotVoting = [...votingList].slice(0, 3); // 투표수 높은 voting 3개
+  const otherVoting = [...votingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
   return (
     <>
       {isHot ? (
@@ -72,22 +72,22 @@ function Card({ isHot, index }: IProps) {
           <Index>{index + 1}</Index>
           <Contents>
             <ContentsRow>
-              <Title>{HotVotings[index].subject}</Title>
+              <Title>{votingList[index]?.subject}</Title>
               <Badges>
-                {HotVotings[index].isSecret ? (
-                  <Badge $isSecret={HotVotings[index].isSecret}>비밀투표</Badge>
+                {votingList[index]?.isSecret ? (
+                  <Badge $isSecret={votingList[index]?.isSecret}>비밀투표</Badge>
                 ) : (
-                  <Badge $isSecret={HotVotings[index].isSecret}>공개투표</Badge>
+                  <Badge $isSecret={votingList[index]?.isSecret}>공개투표</Badge>
                 )}
               </Badges>
             </ContentsRow>
             <ContentsRow>
               <Period>
-                투표일: {HotVotings[index].start} ~ {HotVotings[index].end}
+                투표일: {votingList[index]?.start} ~ {votingList[index]?.end}
               </Period>
             </ContentsRow>
             <ContentsRow>
-              <Total>투표수: {HotVotings[index].total}</Total>
+              <Total>투표수: {votingList[index]?.total}</Total>
             </ContentsRow>
           </Contents>
           <Arrow>→</Arrow>
@@ -97,22 +97,22 @@ function Card({ isHot, index }: IProps) {
           <Index>{index + 1}</Index>
           <Contents>
             <ContentsRow>
-              <Title>{OtherVotings[index].subject}</Title>
+              <Title>{otherVoting[index]?.subject}</Title>
               <Badges>
-                {OtherVotings[index].isSecret ? (
-                  <Badge $isSecret={OtherVotings[index].isSecret}>비밀투표</Badge>
+                {otherVoting[index]?.isSecret ? (
+                  <Badge $isSecret={otherVoting[index]?.isSecret}>비밀투표</Badge>
                 ) : (
-                  <Badge $isSecret={OtherVotings[index].isSecret}>공개투표</Badge>
+                  <Badge $isSecret={otherVoting[index]?.isSecret}>공개투표</Badge>
                 )}
               </Badges>
             </ContentsRow>
             <ContentsRow>
               <Period>
-                투표일: {OtherVotings[index].start} ~ {OtherVotings[index].end}
+                투표일: {otherVoting[index]?.start} ~ {otherVoting[index]?.end}
               </Period>
             </ContentsRow>
             <ContentsRow>
-              <Total>투표수: {OtherVotings[index].total}</Total>
+              <Total>투표수: {otherVoting[index]?.total}</Total>
             </ContentsRow>
           </Contents>
           <Arrow>→</Arrow>

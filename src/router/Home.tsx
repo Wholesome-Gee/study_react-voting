@@ -94,10 +94,9 @@ const EndVotings = styled.div`
 
 function Home() {
   const sortedVotingList = useRecoilValue(sortedByTotalVotings);
+  const reverseVotingList = [...sortedVotingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
   const endVotintgList = useRecoilValue(endVotingsState).slice(0, 3);
   const votingList = useRecoilValue(votingsState);
-  // console.log('localStorage.getItem("id") : ', localStorage.getItem("id"));
-  console.log("votingList : ", votingList);
   return (
     <>
       <Navigation />
@@ -105,7 +104,7 @@ function Home() {
         <Slide></Slide>
         <Banner>
           <div>
-            <Link to={"/votings/regist"}>
+            <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
               <span>투표 등록하기</span>
               <button>Click!</button>
             </Link>
@@ -116,37 +115,41 @@ function Home() {
             <RecommnedSection>
               <SectionTItle>
                 <span>요즘 HOT한 투표 🔥</span>
-                <span>전체보기</span>
+                <Link to={"/votings"}>
+                  <span>전체보기</span>
+                </Link>
               </SectionTItle>
               <VotingCards>
-                {sortedVotingList.map((voting, index) => (
+                {sortedVotingList.slice(0, 3).map((voting, index) => (
                   <Card isHot={true} index={index} key={voting.id} />
                 ))}
               </VotingCards>
             </RecommnedSection>
             <RecommnedSection>
               <SectionTItle>
-                <span>이런 투표는 어떄요? 😊</span>
-                <span>전체보기</span>
+                <span>이런 투표는 어때요? 😊</span>
+                <Link to={"/votings"}>
+                  <span>전체보기</span>
+                </Link>
               </SectionTItle>
               <VotingCards>
-                {sortedVotingList.map((voting, index) => (
+                {reverseVotingList.map((voting, index) => (
                   <Card isHot={false} index={index} key={voting.id} />
                 ))}
               </VotingCards>
             </RecommnedSection>
           </Recommend>
-          {/* <EndVotingSection>
+          <EndVotingSection>
             <SectionTItle>
               <span>지난 투표 결과 보기 🔍</span>
               <span>전체보기</span>
             </SectionTItle>
             <EndVotings>
-              {endVotintgList.map((voting, index) => (
+              {endVotintgList.slice(0, 3).map((voting, index) => (
                 <EndVotingCard index={index} key={voting.id} />
               ))}
             </EndVotings>
-          </EndVotingSection> */}
+          </EndVotingSection>
         </Container>
       </Background>
     </>

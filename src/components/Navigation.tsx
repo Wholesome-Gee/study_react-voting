@@ -140,7 +140,7 @@ export default function Navigation() {
           ) : (
             <>
               <Join>
-                <Link to="/">회원가입</Link>
+                <Link to="/join">회원가입</Link>
               </Join>
               <Login>
                 <Link to="/login">로그인</Link>
@@ -172,7 +172,9 @@ export default function Navigation() {
                 <MdClose onClick={toggleSetMenu} />
               </CloseBtn>
               <Menues>
-                <p>투표 등록하기 →</p>
+                <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
+                  <p>투표 등록하기 →</p>
+                </Link>
                 <p>진행중인 투표 →</p>
                 <p>종료된 투표 →</p>
               </Menues>
