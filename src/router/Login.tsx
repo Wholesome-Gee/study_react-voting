@@ -112,8 +112,16 @@ function Login() {
       setValue("pw", "");
       return;
     }
-    localStorage.setItem("id", id);
-    localStorage.setItem("pw", pw);
+    const idObj = JSON.stringify({ value: id, expire: Date.now() + 10000 });
+    const pwObj = JSON.stringify({ value: pw, expire: Date.now() + 10000 });
+    localStorage.setItem("id", idObj);
+    localStorage.setItem("pw", pwObj);
+    setTimeout(() => {
+      localStorage.removeItem("id");
+      localStorage.removeItem("pw");
+      console.log("로그인 30분경과로 인한 자동 로그아웃");
+      alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+    }, 1800000);
     navigate("/");
   }
 

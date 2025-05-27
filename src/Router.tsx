@@ -4,6 +4,7 @@ import Login from "./router/Login";
 import Join from "./router/Join";
 import Votings from "./router/Votings";
 import Regist from "./router/Regist";
+import Voting from "./router/Voting";
 
 export default function Router() {
   return (
@@ -12,7 +13,9 @@ export default function Router() {
         <Route path="/join" element={<Join />} />
         <Route path="/login" element={<Login />} />
         <Route path="/votings/regist" element={<Regist />} />
-        <Route path="/votings" element={<Votings />} />
+        <Route path="/votings" element={<Votings />}>
+          <Route path="/votings/:id" element={<Voting />}></Route>
+        </Route>
         <Route path="/" element={<Home />} />
       </Routes>
     </BrowserRouter>
