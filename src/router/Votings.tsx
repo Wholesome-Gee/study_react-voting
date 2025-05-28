@@ -4,6 +4,7 @@ import { votingsState } from "../atoms";
 import Navigation from "../components/Navigation";
 import styled from "styled-components";
 import { Link, useMatch, useNavigate } from "react-router-dom";
+import Voting from "./Voting";
 
 const Container = styled.div`
   margin: 0 auto;
@@ -22,7 +23,6 @@ const PageContents = styled.div`
   width: 100%;
   padding: 30px;
   padding-bottom: 138px;
-  border: 1px solid white;
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
@@ -35,13 +35,13 @@ const Card = styled.div`
   border-radius: 1rem;
   width: 350px;
 `;
-const Badge = styled.span<{ isSecret: boolean }>`
+const Badge = styled.span<{ secret: string }>`
   margin-bottom: 16px;
   padding: 4px 8px;
   border-radius: 8px;
   text-align: center;
   display: inline-block;
-  background-color: ${(props) => (props.isSecret ? props.theme.pointColor.sub : props.theme.pointColor.main)};
+  background-color: ${(props) => (props.secret === "true" ? props.theme.pointColor.sub : props.theme.pointColor.main)};
 `;
 const CardTitle = styled.h1`
   font-size: 20px;
@@ -93,6 +93,9 @@ const AddBtn = styled.div`
 const Overlay = styled.div`
   width: 100vw;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: fixed;
   top: 0;
   z-index: 200;
@@ -125,36 +128,38 @@ function Votings() {
     <>
       <Navigation />
       <Container>
-        <PageTitle>진행중인 투표</PageTitle>
-        <PageContents>
-          {visibleVotingList.map((item) => (
-            <Card key={item.id}>
-              {item.isSecret ? (
-                <Badge isSecret={item.isSecret}>비밀투표</Badge>
-              ) : (
-                <Badge isSecret={item.isSecret}>공개투표</Badge>
-              )}
+        {votingList ? (
+          <>
+            <PageTitle>진행중인 투표</PageTitle>
+            <PageContents>
+              {visibleVotingList.map((item) => (
+                <Card key={item.id}>
+                  {item.isSecret ? (
+                    <Badge secret={String(item.isSecret)}>비밀투표</Badge>
+                  ) : (
+                    <Badge secret={String(item.isSecret)}>공개투표</Badge>
+                  )}
 
-              <CardTitle>{item.subject}</CardTitle>
-              <Total>총 투표수 : {item.total}표</Total>
-              <DDay>투표 종료일 : {getDDay(item.end)}</DDay>
-              <DetailBtn
-                onClick={() => {
-                  navigate(item.id);
-                }}
-              >
-                자세히 보기
-              </DetailBtn>
-            </Card>
-          ))}
-          {count * 3 < votingList.length ? <AddBtn onClick={handleClickAddBtn}>+</AddBtn> : null}
-        </PageContents>
+                  <CardTitle>{item.subject}</CardTitle>
+                  <Total>총 투표수 : {item.total}표</Total>
+                  <DDay>투표 종료일 : {getDDay(item.end)}</DDay>
+                  <DetailBtn
+                    onClick={() => {
+                      navigate(item.id);
+                    }}
+                  >
+                    자세히 보기
+                  </DetailBtn>
+                </Card>
+              ))}
+              {count * 3 < votingList.length ? <AddBtn onClick={handleClickAddBtn}>+</AddBtn> : null}
+            </PageContents>
+          </>
+        ) : null}
         {match ? (
-          <Overlay
-            onClick={() => {
-              navigate(-1);
-            }}
-          ></Overlay>
+          <Overlay>
+            <Voting />
+          </Overlay>
         ) : null}
       </Container>
     </>

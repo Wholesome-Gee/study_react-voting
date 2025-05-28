@@ -188,7 +188,6 @@ export default function Regist() {
     setVotingList(newVotingList);
     setPageNum((prev) => (prev === 3 ? 3 : prev + 1));
   }
-  console.log("Voting.tsx 192번", votingList);
   function handleClickNextBtn(event: React.FormEvent<HTMLButtonElement>) {
     event.preventDefault();
     setPageNum((prev) => (prev === 3 ? 3 : prev + 1));
