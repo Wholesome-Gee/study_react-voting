@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { votingsState } from "../atoms";
 import Navigation from "../components/Navigation";
@@ -106,6 +106,7 @@ function Votings() {
   const votingList = useRecoilValue(votingsState);
   const visibleVotingList = votingList.slice(0, 3 * count);
   const match = useMatch("/votings/:id");
+  const matchHome = useMatch("/");
   const navigate = useNavigate();
   // console.log(match);
   // console.log(votingList);
@@ -124,6 +125,24 @@ function Votings() {
   function handleClickAddBtn() {
     setCount((prev) => prev + 1);
   }
+
+  useEffect(() => {
+    const json = localStorage.getItem("id");
+    if (!json) return;
+    const session = JSON.parse(json);
+    console.log(session);
+    if (Date.now() > session.expire) {
+      localStorage.removeItem("id");
+      localStorage.removeItem("pw");
+      if (matchHome) {
+        window.location.reload();
+      } else {
+        navigate("/");
+      }
+      alert("세션이 만료되어 로그아웃 됩니다.");
+    }
+  }, []);
+
   return (
     <>
       <Navigation />
@@ -145,7 +164,7 @@ function Votings() {
                   <DDay>투표 종료일 : {getDDay(item.end)}</DDay>
                   <DetailBtn
                     onClick={() => {
-                      navigate(item.id);
+                      localStorage.getItem("id") ? navigate(item.id) : navigate("/login");
                     }}
                   >
                     자세히 보기

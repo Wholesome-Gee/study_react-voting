@@ -17,6 +17,7 @@ body {
   width: 100%;
   color: ${(props) => props.theme.textColor.text};
   background-color: ${(props) => props.theme.bgColor};
+  
 }
 ol, ul {
   list-style: none;

@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import Navigation from "../components/Navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { IOption, IVoting, votingsSelector } from "../atoms";
 
@@ -132,6 +132,8 @@ const PrevBtn = styled(NextBtn)`
 `;
 
 export default function Regist() {
+  const matchHome = useMatch("/");
+  const navigate = useNavigate();
   const [pageNum, setPageNum] = useState(0); // 0 : 투표제목입력 page // 1: 투표항목입력page // 2: 비밀투표선택page // 3: 완료페이지
   const [voting, setVoting] = useState<IVoting>(); //
   const [options, setOptions] = useState<IOption[]>([]);
@@ -177,10 +179,11 @@ export default function Regist() {
       subject: data.votingTitle,
       start: startDate(),
       end: endDate(),
-      total: 100,
+      total: 0,
       owner: "test1",
       isSecret,
       isEnd: false,
+      voteUser: [],
       options,
     };
     setVoting(newVoting);
@@ -224,6 +227,23 @@ export default function Regist() {
     // console.log(targetIndex);
     //
   }
+
+  useEffect(() => {
+    const json = localStorage.getItem("id");
+    if (!json) return;
+    const session = JSON.parse(json);
+    console.log(session);
+    if (Date.now() > session.expire) {
+      localStorage.removeItem("id");
+      localStorage.removeItem("pw");
+      if (matchHome) {
+        window.location.reload();
+      } else {
+        navigate("/");
+      }
+      alert("세션이 만료되어 로그아웃 됩니다.");
+    }
+  }, []);
 
   return (
     <>

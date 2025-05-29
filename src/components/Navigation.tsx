@@ -175,7 +175,9 @@ export default function Navigation() {
                 <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
                   <p>투표 등록하기 →</p>
                 </Link>
-                <p>진행중인 투표 →</p>
+                <Link to={"/votings"}>
+                  <p>진행중인 투표 →</p>
+                </Link>
                 <p>종료된 투표 →</p>
               </Menues>
             </MenuBar>

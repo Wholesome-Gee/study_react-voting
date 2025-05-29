@@ -4,7 +4,8 @@ import EndVotingCard from "../components/EndVotingCard";
 import { useRecoilValue } from "recoil";
 import { endVotingsState, sortedByTotalVotings, votingsState } from "../atoms";
 import Navigation from "../components/Navigation";
-import { Link } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Background = styled.div`
   width: 100%;
@@ -93,10 +94,29 @@ const EndVotings = styled.div`
 `;
 
 function Home() {
+  const matchHome = useMatch("/");
+  const navigate = useNavigate();
   const sortedVotingList = useRecoilValue(sortedByTotalVotings);
   const reverseVotingList = [...sortedVotingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
   const endVotintgList = useRecoilValue(endVotingsState).slice(0, 3);
   const votingList = useRecoilValue(votingsState);
+
+  useEffect(() => {
+    const json = localStorage.getItem("id");
+    if (!json) return;
+    const session = JSON.parse(json);
+    console.log(session);
+    if (Date.now() > session.expire) {
+      localStorage.removeItem("id");
+      localStorage.removeItem("pw");
+      if (matchHome) {
+        window.location.reload();
+      } else {
+        navigate("/");
+      }
+      alert("세션이 만료되어 로그아웃 됩니다.");
+    }
+  }, []);
   return (
     <>
       <Navigation />
