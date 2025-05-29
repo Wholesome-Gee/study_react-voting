@@ -44,6 +44,24 @@ const StepTitle = styled.div`
 const StepContents = styled.div`
   max-height: 260px;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 26px;
+    /* border: 1px solid ${(props) => props.theme.textColor.placeholder}; */
+    border-radius: 16px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${(props) => props.theme.textColor.placeholder};
+    border-radius: 100px;
+    border-right: 8px solid ${(props) => props.theme.bgColor};
+    border-left: 8px solid ${(props) => props.theme.bgColor};
+    &:hover {
+      background-color: ${(props) => props.theme.textColor.text};
+    }
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+    background-color: aliceblue;
+  }
 `;
 const InputBox = styled.div`
   margin-bottom: 1rem;
@@ -138,7 +156,7 @@ export default function Regist() {
   const [voting, setVoting] = useState<IVoting>(); //
   const [options, setOptions] = useState<IOption[]>([]);
   const [count, setCount] = useState(3);
-  const [optionCount, setOptionCount] = useState<number[]>([1, 2]);
+  const [visibleOptions, setVisibleOptions] = useState<number[]>([1, 2]);
   const [inputNames, setInputNames] = useState<string[]>(["option1", "option2"]);
   const [isSecret, setIsSecret] = useState(false);
   const [votingList, setVotingList] = useRecoilState(votingsSelector);
@@ -151,14 +169,15 @@ export default function Regist() {
 
   // 함수정의
   function success(data: any) {
-    const optionKeys = Object.keys(data).filter((key) => key.includes("option")); // ['option1','option2',...]
-    const optionValues = Object.values(data).filter((value, index) => index !== 0) as string[]; // ['이재명','김문수','이준석']
+    const optionKeys = Object.keys(data).filter((key) => inputNames.includes(key)); // ['option1','option2',...'option4']
+    const optionKeysIndex = optionKeys.map((item, index) => index); // [0,1,2,3,4]
+    const optionValues = optionKeys.map((item) => data[item]); // ['김','나','박','이']
     const options = optionValues.map((value, index) => {
       const option: IOption = { id: optionKeys[index], index, name: value, count: 0, image: "" }; // {id:'option1', index:0, name:'이재명', count:0, image:""}
       return option;
     });
     setOptions(options); // [{id:'random', index:0, name:'이재명', count:0, image:""},{id:'random', index:1, name:'김문수', count:0, image:""},...]
-    // console.log(data); // {votingTitle: '1', option1: '1', option2: '2'}
+    console.log(data); // {votingTitle: '1', option1: '1', option2: '2'}
     // console.log(optionKeys, "-------", optionValues);
     function startDate() {
       const year = new Date().getFullYear();
@@ -201,8 +220,9 @@ export default function Regist() {
   }
   function handleClickAddBtn() {
     setInputNames([...inputNames, `option${count}`]);
-    setOptionCount([...optionCount, count]);
+    setVisibleOptions([...visibleOptions, count]);
     setCount((num) => num + 1);
+    console.log("inputNames", inputNames);
     // id: number;
     // index: number;
     // name: string;
@@ -210,20 +230,19 @@ export default function Regist() {
     // image: string;
   }
   function handleClickDeleteBtn(event: React.MouseEvent<HTMLDivElement>) {
-    /*
-     */
-    const newOptions = inputNames.filter((inputNames) => inputNames !== event.currentTarget.id);
+    const newOptions = inputNames.filter((inputName) => inputName !== event.currentTarget.id);
     setInputNames(newOptions);
-    const targetIndex = inputNames.findIndex((item) => item === event.currentTarget.id);
-    const newOptionCount = optionCount.filter((count, index) => index !== targetIndex);
-    setOptionCount(newOptionCount);
-    // console.log(optionCount);
-    // console.log(newOptionCount);
-    // const copyOptions = [...optionCount];
+    const targetIndex = inputNames.findIndex((inputName) => inputName === event.currentTarget.id);
+    const newVisibleOptions = visibleOptions.filter((count, index) => index !== targetIndex);
+    setVisibleOptions(newVisibleOptions);
+    console.log("delete inputNames", inputNames);
+    // console.log(visibleOptions);
+    // console.log(newVisibleOptions);
+    // const copyOptions = [...visibleOptions];
     // const copyDeleteOption = [...deleteOption];
     // copyOptions.splice(deleteTargetIndex, 1);
     // copyDeleteOption.push(Number(event.currentTarget.id));
-    // setOptionCount(copyOptions);
+    // setVisibleOptions(copyOptions);
     // console.log(targetIndex);
     //
   }
@@ -266,7 +285,7 @@ export default function Regist() {
               <Step>
                 <StepTitle>STEP2. 투표 항목을 입력하세요.</StepTitle>
                 <StepContents>
-                  {optionCount.map((number, index) => {
+                  {visibleOptions.map((number, index) => {
                     const inputName = `option${number}`;
                     const value = watch(inputName) || "";
                     return (

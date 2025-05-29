@@ -105,7 +105,6 @@ function Home() {
     const json = localStorage.getItem("id");
     if (!json) return;
     const session = JSON.parse(json);
-    console.log(session);
     if (Date.now() > session.expire) {
       localStorage.removeItem("id");
       localStorage.removeItem("pw");

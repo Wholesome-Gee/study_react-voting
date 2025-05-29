@@ -122,6 +122,11 @@ const CloseBtn = styled.button`
   color: ${(props) => props.theme.textColor.text};
   font-size: 20px;
   background-color: ${(props) => props.theme.pointColor.main};
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  &:hover {
+    color: ${(props) => props.theme.pointColor.sub};
+  }
 `;
 const ExitBtn = styled.button`
   width: 50px;
@@ -134,6 +139,11 @@ const ExitBtn = styled.button`
   right: 20px;
   font-size: 30px;
   background-color: transparent;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  &:hover {
+    transform: rotateZ(90deg);
+  }
 `;
 
 // Component
