@@ -173,7 +173,7 @@ export default function Regist() {
     const optionKeysIndex = optionKeys.map((item, index) => index); // [0,1,2,3,4]
     const optionValues = optionKeys.map((item) => data[item]); // ['김','나','박','이']
     const options = optionValues.map((value, index) => {
-      const option: IOption = { id: optionKeys[index], index, name: value, count: 0, image: "" }; // {id:'option1', index:0, name:'이재명', count:0, image:""}
+      const option: IOption = { id: optionKeys[index], index, name: value, count: 0, voter: [] }; // {id:'option1', index:0, name:'이재명', count:0, image:""}
       return option;
     });
     setOptions(options); // [{id:'random', index:0, name:'이재명', count:0, image:""},{id:'random', index:1, name:'김문수', count:0, image:""},...]
@@ -333,6 +333,10 @@ export default function Regist() {
                     </Labels>
                   </InputBox>
                 </StepContents>
+              </Step>
+            ) : pageNum === 3 ? (
+              <Step>
+                <StepTitle>투표등록이 완료 되었습니다.</StepTitle>
               </Step>
             ) : null}
             <Btns>

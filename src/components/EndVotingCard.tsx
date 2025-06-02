@@ -2,24 +2,26 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { endVotingsState } from "../atoms";
 
-const VotingCard = styled.div`
+const CardContainer = styled.div`
   padding: 1rem 0;
   width: 100%;
   border: 1px solid ${(props) => props.theme.textColor.text};
   border-radius: 1rem;
 `;
-const Title = styled.div`
+const Row = styled.div`
   margin-bottom: 1rem;
   padding: 0 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 600;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  span:last-child {
-    font-size: 1rem;
-    color: ${(props) => props.theme.textColor.placeholder};
-  }
+`;
+const Title = styled.div`
+  font-size: 1.5rem;
+  font-weight: 600;
+`;
+const Total = styled.span`
+  font-size: 1rem;
+  color: ${(props) => props.theme.textColor.placeholder};
 `;
 const Contents = styled.div`
   padding: 0 1.5rem;
@@ -35,29 +37,29 @@ const Contents = styled.div`
     }
   }
 `;
-const Left = styled.div`
+const FirstOption = styled.div`
   display: flex;
   align-items: center;
-`;
-const Medal = styled.div`
-  margin-right: 0.5rem;
-  width: 2.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 2.5rem;
-`;
-const OptionName = styled.div`
-  margin-right: 1rem;
-  font-size: 2.5rem;
-  font-weight: 600;
-`;
-const Results = styled.div`
-  width: 20%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  gap: 0.5rem;
+  & > span {
+    margin-right: 1rem;
+    font-size: 2.5rem;
+    font-weight: 600;
+  }
+  & > span:first-child {
+    // 메달
+    width: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  & > div {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 0.5rem;
+    font-size: 1.2rem;
+  }
 `;
 const Right = styled.div`
   display: flex;
@@ -75,6 +77,7 @@ const Right = styled.div`
     }
   }
 `;
+const SecondOption = styled.div``;
 
 interface IProps {
   index: number;
@@ -85,27 +88,27 @@ function EndVotingCard({ index }: IProps) {
   const sortedEndVoting = [...endVotingList[index].options].sort((a, b) => b.count - a.count);
 
   return (
-    <VotingCard>
-      <Title>
-        <span>{endVoting.subject}</span>
-        <span>총 투표수: {endVoting.total}표</span>
-      </Title>
+    <CardContainer>
+      <Row>
+        <Title>{endVoting.subject}</Title>
+        <Total>총 투표수: {endVoting.total}표</Total>
+      </Row>
       <Contents>
-        <Left>
-          <Medal>🥇</Medal>
-          <OptionName>{sortedEndVoting[0].name}</OptionName>
-          <Results>
-            <p>득표수: {sortedEndVoting[0].count}표</p>
-            <p>득표율: {Math.floor((sortedEndVoting[0].count / endVoting.total) * 1000) / 10}%</p>
-          </Results>
-        </Left>
-        <Right>
+        <FirstOption>
+          <span>🥇</span>
+          <span>{sortedEndVoting[0].name}</span>
           <div>
+            <span>득표수: {sortedEndVoting[0].count}표</span>
+            <span>득표율: {Math.floor((sortedEndVoting[0].count / endVoting.total) * 1000) / 10}%</span>
+          </div>
+        </FirstOption>
+        <Right>
+          <SecondOption>
             <span>🥈</span>
             <span>{sortedEndVoting[1].name}</span>
             <span>득표수: {sortedEndVoting[1].count}표</span>
             <span>득표율: {Math.floor((sortedEndVoting[1].count / endVoting.total) * 1000) / 10}%</span>
-          </div>
+          </SecondOption>
           <div>
             <span>🥉</span>
             <span>{sortedEndVoting[2].name}</span>
@@ -114,7 +117,7 @@ function EndVotingCard({ index }: IProps) {
           </div>
         </Right>
       </Contents>
-    </VotingCard>
+    </CardContainer>
   );
 }
 

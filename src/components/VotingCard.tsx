@@ -2,7 +2,7 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { sortedByTotalVotings, votingsState } from "../atoms";
 
-const VotingCard = styled.div`
+const CardContainer = styled.div`
   padding: 1rem 0;
   width: 100%;
   display: flex;
@@ -17,10 +17,10 @@ const Index = styled.div`
   align-items: center;
   font-size: 2.5rem;
 `;
-const Contents = styled.div`
+const ContentBox = styled.div`
   width: 70%;
 `;
-const ContentsRow = styled.div``;
+const Row = styled.div``;
 const Title = styled.div`
   margin-bottom: 0.5rem;
   font-size: 1.5rem;
@@ -61,65 +61,64 @@ interface IProps {
   isHot: boolean;
   index: number;
 }
-function Card({ isHot, index }: IProps) {
-  const votingList = useRecoilValue(sortedByTotalVotings); // 투표수 높은순으로 정렬된 list
-  const hotVoting = [...votingList].slice(0, 3); // 투표수 높은 voting 3개
-  const otherVoting = [...votingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
+function VotingCard({ isHot, index }: IProps) {
+  const hotVotingList = useRecoilValue(sortedByTotalVotings); // 투표수 높은순으로 정렬된 list
+  const HotVotingListReverse = [...hotVotingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
   return (
     <>
       {isHot ? (
-        <VotingCard>
+        <CardContainer>
           <Index>{index + 1}</Index>
-          <Contents>
-            <ContentsRow>
-              <Title>{votingList[index]?.subject}</Title>
+          <ContentBox>
+            <Row>
+              <Title>{hotVotingList[index]?.subject}</Title>
               <Badges>
-                {votingList[index]?.isSecret ? (
-                  <Badge $isSecret={votingList[index]?.isSecret}>비밀투표</Badge>
+                {hotVotingList[index]?.isSecret ? (
+                  <Badge $isSecret={hotVotingList[index]?.isSecret}>비밀투표</Badge>
                 ) : (
-                  <Badge $isSecret={votingList[index]?.isSecret}>공개투표</Badge>
+                  <Badge $isSecret={hotVotingList[index]?.isSecret}>공개투표</Badge>
                 )}
               </Badges>
-            </ContentsRow>
-            <ContentsRow>
+            </Row>
+            <Row>
               <Period>
-                투표일: {votingList[index]?.start} ~ {votingList[index]?.end}
+                투표일: {hotVotingList[index]?.start} ~ {hotVotingList[index]?.end}
               </Period>
-            </ContentsRow>
-            <ContentsRow>
-              <Total>투표수: {votingList[index]?.total}</Total>
-            </ContentsRow>
-          </Contents>
-          <Arrow>→</Arrow>
-        </VotingCard>
+            </Row>
+            <Row>
+              <Total>투표수: {hotVotingList[index]?.total}</Total>
+            </Row>
+          </ContentBox>
+          <Arrow> → </Arrow>
+        </CardContainer>
       ) : (
-        <VotingCard>
+        <CardContainer>
           <Index>{index + 1}</Index>
-          <Contents>
-            <ContentsRow>
-              <Title>{otherVoting[index]?.subject}</Title>
+          <ContentBox>
+            <Row>
+              <Title>{HotVotingListReverse[index]?.subject}</Title>
               <Badges>
-                {otherVoting[index]?.isSecret ? (
-                  <Badge $isSecret={otherVoting[index]?.isSecret}>비밀투표</Badge>
+                {HotVotingListReverse[index]?.isSecret ? (
+                  <Badge $isSecret={HotVotingListReverse[index]?.isSecret}>비밀투표</Badge>
                 ) : (
-                  <Badge $isSecret={otherVoting[index]?.isSecret}>공개투표</Badge>
+                  <Badge $isSecret={HotVotingListReverse[index]?.isSecret}>공개투표</Badge>
                 )}
               </Badges>
-            </ContentsRow>
-            <ContentsRow>
+            </Row>
+            <Row>
               <Period>
-                투표일: {otherVoting[index]?.start} ~ {otherVoting[index]?.end}
+                투표일: {HotVotingListReverse[index]?.start} ~ {HotVotingListReverse[index]?.end}
               </Period>
-            </ContentsRow>
-            <ContentsRow>
-              <Total>투표수: {otherVoting[index]?.total}</Total>
-            </ContentsRow>
-          </Contents>
+            </Row>
+            <Row>
+              <Total>투표수: {HotVotingListReverse[index]?.total}</Total>
+            </Row>
+          </ContentBox>
           <Arrow>→</Arrow>
-        </VotingCard>
+        </CardContainer>
       )}
     </>
   );
 }
 
-export default Card;
+export default VotingCard;

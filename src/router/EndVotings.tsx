@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { votingsState } from "../atoms";
+import { endVotingsState, votingsState } from "../atoms";
 import Navigation from "../components/Navigation";
 import styled from "styled-components";
 import { Link, useMatch, useNavigate } from "react-router-dom";
 import Voting from "./Voting";
+import EndVoting from "./EndVoting";
 
 const Container = styled.div`
   margin: 0 auto;
@@ -113,24 +114,11 @@ function Votings() {
   const [count, setCount] = useState(1);
   const [loginUser, setLoginUser] = useState("");
   const [votingMark, setVotingMark] = useState(false);
-  const votingList = useRecoilValue(votingsState);
+  const votingList = useRecoilValue(endVotingsState);
   const visibleVotingList = votingList.slice(0, 3 * count);
-  const match = useMatch("/votings/:id");
+  const match = useMatch("/votings/end/:id");
   const matchHome = useMatch("/");
   const navigate = useNavigate();
-  // console.log(match);
-  // console.log(votingList);
-  function getDDay(endDate: string) {
-    const today = new Date();
-    const endDay = new Date(endDate);
-    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
-      today.getDate()
-    ).padStart(2, "0")}`;
-    if (todayString === endDate) {
-      return "D-Day";
-    }
-    return `D-${Math.ceil((endDay.getTime() - today.getTime()) / 86400000)}`;
-  }
 
   function handleClickAddBtn() {
     setCount((prev) => prev + 1);
@@ -140,7 +128,6 @@ function Votings() {
     const json = localStorage.getItem("id");
     if (!json) return;
     const session = JSON.parse(json);
-    console.log("Votings.tsx 134", session);
     setLoginUser(session.value);
     if (Date.now() > session.expire) {
       localStorage.removeItem("id");
@@ -160,7 +147,7 @@ function Votings() {
       <Container>
         {votingList ? (
           <>
-            <PageTitle>진행중인 투표</PageTitle>
+            <PageTitle>종료된 투표</PageTitle>
             <PageContents>
               {visibleVotingList.map((item) => (
                 <Card key={item.id}>
@@ -172,10 +159,10 @@ function Votings() {
 
                   <CardTitle>{item.subject}</CardTitle>
                   <Total>총 투표수 : {item.total}표</Total>
-                  <DDay>투표 종료일 : {getDDay(item.end)}</DDay>
+                  <DDay>투표 종료일 : {item.end}</DDay>
                   <DetailBtn
                     onClick={() => {
-                      localStorage.getItem("id") ? navigate(item.id) : navigate("/login");
+                      navigate(`/votings/end/${item.id}`);
                     }}
                   >
                     자세히 보기
@@ -189,7 +176,7 @@ function Votings() {
         ) : null}
         {match ? (
           <Overlay>
-            <Voting />
+            <EndVoting />
           </Overlay>
         ) : null}
       </Container>

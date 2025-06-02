@@ -3,7 +3,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { MdClose } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   padding: 1rem 4rem;
@@ -113,6 +113,7 @@ const MenuBarVariant = {
   exit: { x: "-100%", opacity: 0 },
 };
 export default function Navigation() {
+  const navigate = useNavigate();
   const [clickMenu, setClickMenu] = useState(false);
   function toggleSetMenu() {
     setClickMenu((prev) => !prev);
@@ -120,7 +121,8 @@ export default function Navigation() {
   function clickLogout() {
     localStorage.removeItem("id");
     localStorage.removeItem("pw");
-    window.location.reload();
+    navigate("/");
+    // window.location.reload();
   }
   return (
     <>
@@ -178,7 +180,9 @@ export default function Navigation() {
                 <Link to={"/votings"}>
                   <p>진행중인 투표 →</p>
                 </Link>
-                <p>종료된 투표 →</p>
+                <Link to={"/votings/end"}>
+                  <p>종료된 투표 →</p>
+                </Link>
               </Menues>
             </MenuBar>
           </>

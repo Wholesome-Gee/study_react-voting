@@ -1,11 +1,12 @@
 import styled from "styled-components";
-import Card from "../components/RecommendVotingCard";
+import VotingCard from "../components/VotingCard";
 import EndVotingCard from "../components/EndVotingCard";
 import { useRecoilValue } from "recoil";
 import { endVotingsState, sortedByTotalVotings, votingsState } from "../atoms";
 import Navigation from "../components/Navigation";
 import { Link, useMatch, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 
 const Background = styled.div`
   width: 100%;
@@ -14,9 +15,44 @@ const Background = styled.div`
   align-items: center;
 `;
 const Slide = styled.div`
-  width: 100%;
+  display: flex;
+  width: 100vw;
   height: 550px;
+  position: relative;
+  overflow: hidden;
   background-color: ${(props) => props.theme.bgColor};
+`;
+const SlideBanner = styled.div<{ url: string }>`
+  width: 100%;
+  height: 600px;
+  background: url(${(props) => props.url});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+`;
+const PrevBtn = styled.div`
+  margin: auto;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 40px;
+  top: 0;
+  bottom: 0;
+  font-size: 32px;
+  transition: all 0.2s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  &:hover {
+    color: ${(props) => props.theme.pointColor.sub};
+  }
+`;
+const NextBtn = styled(PrevBtn)`
+  left: auto;
+  right: 40px;
 `;
 const Banner = styled.div`
   width: 100%;
@@ -49,13 +85,14 @@ const Banner = styled.div`
 const Container = styled.div`
   width: 1200px;
 `;
-const Recommend = styled.div`
+const RecommendSection = styled.div`
   display: flex;
 `;
-const RecommnedSection = styled.div`
+const RecommendHot = styled.div`
   padding: 60px 30px;
   width: 100%;
 `;
+const RecommendAbout = styled(RecommendHot)``;
 
 const SectionTItle = styled.div`
   margin-bottom: 16px;
@@ -76,7 +113,7 @@ const SectionTItle = styled.div`
     }
   }
 `;
-const VotingCards = styled.div`
+const VotingCardList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -86,7 +123,7 @@ const EndVotingSection = styled.div`
   width: 100%;
   padding: 60px 30px;
 `;
-const EndVotings = styled.div`
+const EndVotingList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,6 +137,7 @@ function Home() {
   const reverseVotingList = [...sortedVotingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
   const endVotintgList = useRecoilValue(endVotingsState).slice(0, 3);
   const votingList = useRecoilValue(votingsState);
+  const [bannerPage, setBannerPage] = useState(0);
 
   useEffect(() => {
     const json = localStorage.getItem("id");
@@ -116,11 +154,25 @@ function Home() {
       alert("세션이 만료되어 로그아웃 됩니다.");
     }
   }, []);
+
   return (
     <>
       <Navigation />
       <Background>
-        <Slide></Slide>
+        <Slide>
+          <AnimatePresence>
+            {["mainbanner1.png", "mainbanner2.jpg"].map((item, index) =>
+              index === bannerPage ? (
+                <SlideBanner url={process.env.PUBLIC_URL + `/images/${item}`} key={item}>
+                  {/* <p>아싸라비요</p> */}
+                  {/* <button>링크버튼이여</button> */}
+                </SlideBanner>
+              ) : null
+            )}
+            <PrevBtn>&larr;</PrevBtn>
+            <NextBtn>&rarr;</NextBtn>
+          </AnimatePresence>
+        </Slide>
         <Banner>
           <div>
             <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
@@ -130,44 +182,44 @@ function Home() {
           </div>
         </Banner>
         <Container>
-          <Recommend>
-            <RecommnedSection>
+          <RecommendSection>
+            <RecommendHot>
               <SectionTItle>
                 <span>요즘 HOT한 투표 🔥</span>
                 <Link to={"/votings"}>
                   <span>전체보기</span>
                 </Link>
               </SectionTItle>
-              <VotingCards>
+              <VotingCardList>
                 {sortedVotingList.slice(0, 3).map((voting, index) => (
-                  <Card isHot={true} index={index} key={voting.id} />
+                  <VotingCard isHot={true} index={index} key={voting.id} />
                 ))}
-              </VotingCards>
-            </RecommnedSection>
-            <RecommnedSection>
+              </VotingCardList>
+            </RecommendHot>
+            <RecommendAbout>
               <SectionTItle>
                 <span>이런 투표는 어때요? 😊</span>
                 <Link to={"/votings"}>
                   <span>전체보기</span>
                 </Link>
               </SectionTItle>
-              <VotingCards>
+              <VotingCardList>
                 {reverseVotingList.map((voting, index) => (
-                  <Card isHot={false} index={index} key={voting.id} />
+                  <VotingCard isHot={false} index={index} key={voting.id} />
                 ))}
-              </VotingCards>
-            </RecommnedSection>
-          </Recommend>
+              </VotingCardList>
+            </RecommendAbout>
+          </RecommendSection>
           <EndVotingSection>
             <SectionTItle>
               <span>지난 투표 결과 보기 🔍</span>
               <span>전체보기</span>
             </SectionTItle>
-            <EndVotings>
+            <EndVotingList>
               {endVotintgList.slice(0, 3).map((voting, index) => (
                 <EndVotingCard index={index} key={voting.id} />
               ))}
-            </EndVotings>
+            </EndVotingList>
           </EndVotingSection>
         </Container>
       </Background>

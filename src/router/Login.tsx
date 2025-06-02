@@ -4,16 +4,9 @@ import styled from "styled-components";
 import { useRecoilValue } from "recoil";
 import { usersState } from "../atoms";
 import { Link, useMatch, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
-const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-`;
-
-const Form = styled.form`
+const Container = styled.form`
+  margin: 8rem auto 0;
   margin-top: 8rem;
   width: 500px;
   height: 400px;
@@ -81,12 +74,17 @@ const Join = styled.div`
   }
 `;
 
+// 인터페이스
 interface IForm {
   id: string;
   pw: string;
 }
+
+//
 function Login() {
-  // reactHooks
+  const navigate = useNavigate();
+  const homeMatch = useMatch("/");
+  const userList = useRecoilValue(usersState);
   const {
     register,
     handleSubmit,
@@ -94,33 +92,33 @@ function Login() {
     formState: { errors },
     setError,
   } = useForm<IForm>();
-  const userList = useRecoilValue(usersState);
-  const navigate = useNavigate();
-  const match = useMatch("/");
+
   // function
-  function successSubmit({ id, pw }: IForm) {
-    const isExist = userList.find((user) => user.id === id);
-    if (!isExist) {
+  function success({ id, pw }: IForm) {
+    const exist = userList.find((user) => user.id === id);
+    // 잘못된 id 입력 시 에러처리
+    if (!exist) {
       setError("id", { message: "존재하지 않는 id 입니다." }, { shouldFocus: true });
       setValue("id", "");
       setValue("pw", "");
       return;
     }
-    if (isExist.pw !== pw) {
+    // 잘못된 pw 입력 시 에러처리
+    if (exist.pw !== pw) {
       setError("id", { message: "비밀번호가 틀렸습니다." }, { shouldFocus: true });
-      setValue("id", "");
       setValue("pw", "");
       return;
     }
-    const idObj = JSON.stringify({ value: id, expire: Date.now() + 1800000 });
-    const pwObj = JSON.stringify({ value: pw, expire: Date.now() + 1800000 });
-    localStorage.setItem("id", idObj);
-    localStorage.setItem("pw", pwObj);
+    // localStorage에 로그인 유저 정보 등록
+    const idJSON = JSON.stringify({ value: id, expire: Date.now() + 1800000 });
+    const pwJSON = JSON.stringify({ value: pw, expire: Date.now() + 1800000 });
+    localStorage.setItem("id", idJSON);
+    localStorage.setItem("pw", pwJSON);
+    // 30분후 localStorage에 로그인 유저 정보 삭제 후 Home으로 이동
     setTimeout(() => {
       localStorage.removeItem("id");
       localStorage.removeItem("pw");
-      console.log("로그인 30분경과로 인한 자동 로그아웃");
-      if (match) {
+      if (homeMatch) {
         window.location.reload();
       } else {
         navigate("/");
@@ -133,34 +131,32 @@ function Login() {
   return (
     <>
       <Navigation />
-      <Container>
-        <Form onSubmit={handleSubmit(successSubmit)}>
-          <IdInput>
-            <InputName>ID</InputName>
-            <input
-              {...register("id", {
-                required: "id를 입력하세요.",
-                pattern: { value: /^[a-zA-Z0-9_-]+$/, message: "영어와 숫자만 사용할 수 있습니다." },
-              })}
-              placeholder="test1"
-              type="text"
-              autoComplete="off"
-            />
-          </IdInput>
-          <PwInput>
-            <InputName>P/W</InputName>
-            <input {...register("pw", { required: "비밀번호를 입력하세요." })} placeholder="1234" type="password" />
-          </PwInput>
-          {errors.id?.message ? (
-            <Error>{errors.id?.message}</Error>
-          ) : errors.pw?.message ? (
-            <Error>{errors.pw?.message}</Error>
-          ) : null}
-          <Btn>Log In</Btn>
-          <Join>
-            <Link to="/join">회원가입하기 →</Link>
-          </Join>
-        </Form>
+      <Container onSubmit={handleSubmit(success)}>
+        <IdInput>
+          <InputName>ID</InputName>
+          <input
+            {...register("id", {
+              required: "id를 입력하세요.",
+              pattern: { value: /^[a-zA-Z0-9_-]+$/, message: "영어와 숫자만 사용할 수 있습니다." },
+            })}
+            placeholder="test1"
+            type="text"
+            autoComplete="off"
+          />
+        </IdInput>
+        <PwInput>
+          <InputName>P/W</InputName>
+          <input {...register("pw", { required: "비밀번호를 입력하세요." })} placeholder="1234" type="password" />
+        </PwInput>
+        {errors.id?.message ? (
+          <Error>{errors.id?.message}</Error>
+        ) : errors.pw?.message ? (
+          <Error>{errors.pw?.message}</Error>
+        ) : null}
+        <Btn>Log In</Btn>
+        <Join>
+          <Link to="/join">회원가입하기 →</Link>
+        </Join>
       </Container>
     </>
   );

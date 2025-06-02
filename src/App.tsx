@@ -3,15 +3,6 @@ import Router from "./Router";
 import { useEffect } from "react";
 
 function App() {
-  //   const sessionJson = localStorage.getItem("id");
-  //   if (!sessionJson) return;
-  //   const session = JSON.parse(sessionJson);
-  //   if (Date.now() > session.expire) {
-  //     window.localStorage.removeItem("id");
-  //     window.localStorage.removeItem("pw");
-  //     alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-  //   }
-  // }, []);
   return (
     <>
       <Helmet>

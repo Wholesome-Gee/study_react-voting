@@ -3,6 +3,7 @@ import { useMatch, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { votingsState } from "../atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
+import Option from "./Option";
 
 const Container = styled.div`
   padding: 70px 100px;
@@ -70,8 +71,8 @@ const Contents = styled.div`
     height: 2px;
   }
 `;
-const Option = styled.div`
-  width: 50%;
+const OptionInput = styled.div`
+  width: 90%;
   display: flex;
   align-items: center;
   font-size: 20px;
@@ -87,7 +88,6 @@ const Option = styled.div`
     color: ${(props) => props.theme.pointColor.main};
   }
 `;
-
 const SubmitBtn = styled.button`
   width: 170px;
   height: 50px;
@@ -96,25 +96,7 @@ const SubmitBtn = styled.button`
   font-size: 20px;
   background-color: ${(props) => props.theme.pointColor.main};
 `;
-const ProgressBar = styled.div`
-  margin-top: 8px;
-  width: 100%;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  background-color: transparent;
-  p {
-    padding-left: 10px;
-    width: 55px;
-    color: ${(props) => props.theme.pointColor.sub};
-  }
-`;
-const Progress = styled.div<{ percent: number }>`
-  width: ${(props) => props.percent}%;
-  height: 8px;
-  border-radius: 16px;
-  background-color: ${(props) => props.theme.pointColor.main};
-`;
+
 const CloseBtn = styled.button`
   width: 170px;
   height: 50px;
@@ -154,9 +136,10 @@ export default function Voting() {
   const [value, setValue] = useState("");
   const [count, setCount] = useState(1);
   const [votingList, setVotingList] = useRecoilState(votingsState);
+
   const voting = votingList.find((voting) => voting.id === id);
   const loginUser = JSON.parse(localStorage.getItem("id") || "");
-  console.log(loginUser.value);
+  console.log("@", loginUser.value);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -170,9 +153,14 @@ export default function Voting() {
       return;
     }
     // 선택한 항목의 득표수를 1개 추가하는 작업 (voting의 option에 count를 + 1)
+    // 선택한 항목의 투표한인원(voter)에 유저를 추가하는 작업 (voting의 voter에 userId를 추가)
     const targetOptionIndex = copyVoting.options.findIndex((item) => item.name === value); // 0
-    const targetOption = copyVoting.options[targetOptionIndex]; // {id: '1001', index: 1, name: '떡볶이', count: 7650, image: ''}
-    const newOption = { ...targetOption, count: targetOption.count + 1 }; // {id: '1001', index: 1, name: '떡볶이', count: 7651, image: ''}
+    const targetOption = copyVoting.options[targetOptionIndex]; // {id: '1001', index: 1, name: '떡볶이', count: 7650, voter: ['test1','test2',...]}
+    const newOption = {
+      ...targetOption,
+      count: targetOption.count + 1,
+      voter: [...targetOption.voter, loginUser.value],
+    }; // {id: '1001', index: 1, name: '떡볶이', count: 7651, voter: ['test1','test2',...]}
     const newOptions = [...copyVoting.options];
     newOptions.splice(targetOptionIndex, 1, newOption);
     const newVoteUser = [...copyVoting.voteUser, loginUser.value];
@@ -218,7 +206,7 @@ export default function Voting() {
             </Header>
             <Contents>
               {voting.options.map((option) => (
-                <Option key={option.id}>
+                <OptionInput key={option.id}>
                   <input
                     type="radio"
                     name="radio"
@@ -229,7 +217,7 @@ export default function Voting() {
                     }}
                   />
                   <label htmlFor={option.id}>{option.name}</label>
-                </Option>
+                </OptionInput>
               ))}
             </Contents>
             <SubmitBtn>투표후 결과보기</SubmitBtn>
@@ -245,21 +233,30 @@ export default function Voting() {
                 const count = item.count;
                 const percent = Math.floor((count / voting.total) * 100); // 70
                 return (
-                  <div key={item.id}>
-                    <p style={{ fontSize: "18px" }}>
-                      {index + 1}. {item.name} ({item.count}표)
-                    </p>
-                    <ProgressBar>
-                      <Progress percent={percent}></Progress>
-                      <p>{percent}%</p>
-                    </ProgressBar>
-                  </div>
+                  <Option item={item} index={index} percent={percent} secret={voting.isSecret}></Option>
+                  // <div key={item.id}>
+                  //   <p style={{ fontSize: "18px", position: "relative" }}>
+                  //     {index + 1}. {item.name} (
+                  //     <span
+                  //       onClick={() => {
+                  //         setShowVotingUserList(true);
+                  //       }}
+                  //     >
+                  //       {item.count}표
+                  //     </span>
+                  //     {showVotingUserList ? <VotingUserList>asd</VotingUserList> : null})
+                  //   </p>
+                  //   <ProgressBar>
+                  //     <Progress percent={percent}></Progress>
+                  //     <p>{percent}%</p>
+                  //   </ProgressBar>
+                  // </div>
                 );
               })}
             </Contents>
             <CloseBtn
               onClick={() => {
-                navigate("/votings");
+                navigate(-1);
               }}
             >
               창닫기
