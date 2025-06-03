@@ -9,7 +9,7 @@ import EndVotings from "./router/EndVotings";
 
 export default function Router() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <Routes>
         <Route path="/join" element={<Join />} />
         <Route path="/login" element={<Login />} />

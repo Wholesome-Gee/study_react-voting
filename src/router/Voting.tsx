@@ -232,26 +232,7 @@ export default function Voting() {
               {voting.options.map((item, index) => {
                 const count = item.count;
                 const percent = Math.floor((count / voting.total) * 100); // 70
-                return (
-                  <Option item={item} index={index} percent={percent} secret={voting.isSecret}></Option>
-                  // <div key={item.id}>
-                  //   <p style={{ fontSize: "18px", position: "relative" }}>
-                  //     {index + 1}. {item.name} (
-                  //     <span
-                  //       onClick={() => {
-                  //         setShowVotingUserList(true);
-                  //       }}
-                  //     >
-                  //       {item.count}표
-                  //     </span>
-                  //     {showVotingUserList ? <VotingUserList>asd</VotingUserList> : null})
-                  //   </p>
-                  //   <ProgressBar>
-                  //     <Progress percent={percent}></Progress>
-                  //     <p>{percent}%</p>
-                  //   </ProgressBar>
-                  // </div>
-                );
+                return <Option item={item} index={index} percent={percent} secret={voting.isSecret}></Option>;
               })}
             </Contents>
             <CloseBtn

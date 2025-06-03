@@ -164,13 +164,7 @@ export default function EndVoting() {
               const count = item.count;
               const percent = Math.floor((count / voting.total) * 100); // 70
               return (
-                <Option
-                  key={index + "key"}
-                  item={item}
-                  index={index}
-                  percent={percent}
-                  secret={voting.isSecret}
-                ></Option>
+                <Option key={item.id} item={item} index={index} percent={percent} secret={voting.isSecret}></Option>
               );
             })}
           </Contents>

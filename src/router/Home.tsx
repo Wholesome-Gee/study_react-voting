@@ -6,7 +6,7 @@ import { endVotingsState, sortedByTotalVotings, votingsState } from "../atoms";
 import Navigation from "../components/Navigation";
 import { Link, useMatch, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Background = styled.div`
   width: 100%;
@@ -14,21 +14,31 @@ const Background = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-const Slide = styled.div`
-  display: flex;
-  width: 100vw;
+const Slider = styled.div`
+  width: 100%;
   height: 550px;
   position: relative;
   overflow: hidden;
-  background-color: ${(props) => props.theme.bgColor};
 `;
-const SlideBanner = styled.div<{ url: string }>`
+const SlideImg = styled(motion.div)<{ url: string }>`
   width: 100%;
-  height: 600px;
-  background: url(${(props) => props.url});
+  height: 100%;
+  position: absolute;
+  background: url(${(props) => props.url}) no-repeat center center;
   background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+`;
+const SlideBox = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  display: flex;
+`;
+const SlideItem = styled(motion.div)`
+  width: 1920px;
+  border: 1px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 60px;
 `;
 const PrevBtn = styled.div`
   margin: auto;
@@ -130,6 +140,16 @@ const EndVotingList = styled.div`
   gap: 1rem;
 `;
 
+const slideVariants = {
+  start: ({ width, reverseSlide }: { width: number; reverseSlide: boolean }) => ({
+    x: reverseSlide ? -width : width,
+  }),
+  end: { x: 0 },
+  out: ({ width, reverseSlide }: { width: number; reverseSlide: boolean }) => ({
+    x: reverseSlide ? width : -width,
+  }),
+};
+
 function Home() {
   const matchHome = useMatch("/");
   const navigate = useNavigate();
@@ -137,7 +157,10 @@ function Home() {
   const reverseVotingList = [...sortedVotingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
   const endVotintgList = useRecoilValue(endVotingsState).slice(0, 3);
   const votingList = useRecoilValue(votingsState);
-  const [bannerPage, setBannerPage] = useState(0);
+  const [slidePage, setSlidePage] = useState(0);
+  const [reverseSlide, setReverseSlide] = useState(false);
+  const width = window.innerWidth;
+  const arr = ["mainbanner1.png", "mainbanner2.jpg", "mainbanner3.jpg"];
 
   useEffect(() => {
     const json = localStorage.getItem("id");
@@ -154,25 +177,53 @@ function Home() {
       alert("세션이 만료되어 로그아웃 됩니다.");
     }
   }, []);
+  useEffect(() => {
+    const autoSetSlidePage = setInterval(() => {
+      setReverseSlide(false);
+      setSlidePage((prev) => (prev === 2 ? 0 : prev + 1));
+      console.log("123");
+    }, 4000);
+    return () => clearInterval(autoSetSlidePage);
+  }, [slidePage]);
 
+  function increaseSlidePage() {
+    setReverseSlide(false);
+    setSlidePage((prev) => (prev === 2 ? 2 : prev + 1));
+  }
+  function decreaseSlidePage() {
+    setReverseSlide(true);
+    setSlidePage((prev) => (prev === 0 ? 0 : prev - 1));
+  }
   return (
     <>
       <Navigation />
       <Background>
-        <Slide>
-          <AnimatePresence>
-            {["mainbanner1.png", "mainbanner2.jpg"].map((item, index) =>
-              index === bannerPage ? (
-                <SlideBanner url={process.env.PUBLIC_URL + `/images/${item}`} key={item}>
-                  {/* <p>아싸라비요</p> */}
-                  {/* <button>링크버튼이여</button> */}
-                </SlideBanner>
+        <Slider>
+          <AnimatePresence
+            initial={false}
+            onExitComplete={() => {
+              /*setIsSliding(false)*/
+            }}
+            custom={{ width, reverseSlide }}
+          >
+            {arr.map((item, index) =>
+              index === slidePage ? (
+                <SlideImg
+                  custom={{ width, reverseSlide }}
+                  variants={slideVariants}
+                  initial="start"
+                  animate="end"
+                  exit="out"
+                  transition={{ type: "tween", duration: 1 }}
+                  url={process.env.PUBLIC_URL + `/images/${item}`}
+                  key={item}
+                ></SlideImg>
               ) : null
             )}
-            <PrevBtn>&larr;</PrevBtn>
-            <NextBtn>&rarr;</NextBtn>
           </AnimatePresence>
-        </Slide>
+          <PrevBtn onClick={decreaseSlidePage}>&larr;</PrevBtn>
+          <NextBtn onClick={increaseSlidePage}>&rarr;</NextBtn>
+        </Slider>
         <Banner>
           <div>
             <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
@@ -192,7 +243,7 @@ function Home() {
               </SectionTItle>
               <VotingCardList>
                 {sortedVotingList.slice(0, 3).map((voting, index) => (
-                  <VotingCard isHot={true} index={index} key={voting.id} />
+                  <VotingCard isHot={true} index={index} key={voting.subject} />
                 ))}
               </VotingCardList>
             </RecommendHot>
@@ -213,11 +264,13 @@ function Home() {
           <EndVotingSection>
             <SectionTItle>
               <span>지난 투표 결과 보기 🔍</span>
-              <span>전체보기</span>
+              <Link to={"/votings/end"}>
+                <span>전체보기</span>
+              </Link>
             </SectionTItle>
             <EndVotingList>
               {endVotintgList.slice(0, 3).map((voting, index) => (
-                <EndVotingCard index={index} key={voting.id} />
+                <EndVotingCard index={index} key={voting.id + index} />
               ))}
             </EndVotingList>
           </EndVotingSection>

@@ -1,6 +1,7 @@
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { sortedByTotalVotings, votingsState } from "../atoms";
+import { Link, useNavigate } from "react-router-dom";
 
 const CardContainer = styled.div`
   padding: 1rem 0;
@@ -64,6 +65,7 @@ interface IProps {
 function VotingCard({ isHot, index }: IProps) {
   const hotVotingList = useRecoilValue(sortedByTotalVotings); // 투표수 높은순으로 정렬된 list
   const HotVotingListReverse = [...hotVotingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
+  const navigate = useNavigate();
   return (
     <>
       {isHot ? (
@@ -89,7 +91,19 @@ function VotingCard({ isHot, index }: IProps) {
               <Total>투표수: {hotVotingList[index]?.total}</Total>
             </Row>
           </ContentBox>
-          <Arrow> → </Arrow>
+          <Arrow
+            onClick={() => {
+              const login = localStorage.getItem("id");
+              if (!login) {
+                navigate("/login");
+                return;
+              }
+              navigate(`/votings`);
+              navigate(`/votings/${hotVotingList[index].id}`);
+            }}
+          >
+            →
+          </Arrow>
         </CardContainer>
       ) : (
         <CardContainer>

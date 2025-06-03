@@ -289,7 +289,7 @@ export default function Regist() {
                     const inputName = `option${number}`;
                     const value = watch(inputName) || "";
                     return (
-                      <div key={number}>
+                      <div key={number + ""}>
                         <InputBox>
                           <DeleteBtn onClick={handleClickDeleteBtn} id={`option${number}`}>
                             -

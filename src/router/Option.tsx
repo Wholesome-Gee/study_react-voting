@@ -103,7 +103,7 @@ function Option({ item, index, percent, secret }: IProps) {
           <p>{item.name}에 투표한 인원</p>
           <div>
             {item.voter.map((voter, index) => (
-              <span key={index + "key"}>
+              <span key={voter}>
                 {index + 1}. {voter}
               </span>
             ))}

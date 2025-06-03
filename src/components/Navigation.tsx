@@ -3,7 +3,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { MdClose } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   padding: 1rem 4rem;
@@ -113,6 +113,7 @@ const MenuBarVariant = {
   exit: { x: "-100%", opacity: 0 },
 };
 export default function Navigation() {
+  const homeMatch = useMatch("/");
   const navigate = useNavigate();
   const [clickMenu, setClickMenu] = useState(false);
   function toggleSetMenu() {
@@ -122,7 +123,10 @@ export default function Navigation() {
     localStorage.removeItem("id");
     localStorage.removeItem("pw");
     navigate("/");
-    // window.location.reload();
+    alert("로그아웃 되었습니다.");
+    // if (homeMatch) {
+    //   window.location.reload();
+    // }
   }
   return (
     <>
