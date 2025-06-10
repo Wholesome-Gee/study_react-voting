@@ -2,6 +2,8 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { sortedByTotalVotings, votingsState } from "../atoms";
 import { Link, useNavigate } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
+import VotingCardMobile from "./VotingCardMobile";
 
 const CardContainer = styled.div`
   padding: 1rem 0;
@@ -63,48 +65,57 @@ interface IProps {
   index: number;
 }
 function VotingCard({ isHot, index }: IProps) {
+  const mobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
   const hotVotingList = useRecoilValue(sortedByTotalVotings); // 투표수 높은순으로 정렬된 list
   const HotVotingListReverse = [...hotVotingList].reverse().slice(0, 3); // 투표수 낮은 voting 3개
   const navigate = useNavigate();
   return (
     <>
       {isHot ? (
-        <CardContainer>
-          <Index>{index + 1}</Index>
-          <ContentBox>
-            <Row>
-              <Title>{hotVotingList[index]?.subject}</Title>
-              <Badges>
-                {hotVotingList[index]?.isSecret ? (
-                  <Badge $isSecret={hotVotingList[index]?.isSecret}>비밀투표</Badge>
-                ) : (
-                  <Badge $isSecret={hotVotingList[index]?.isSecret}>공개투표</Badge>
-                )}
-              </Badges>
-            </Row>
-            <Row>
-              <Period>
-                투표일: {hotVotingList[index]?.start} ~ {hotVotingList[index]?.end}
-              </Period>
-            </Row>
-            <Row>
-              <Total>투표수: {hotVotingList[index]?.total}</Total>
-            </Row>
-          </ContentBox>
-          <Arrow
-            onClick={() => {
-              const login = localStorage.getItem("id");
-              if (!login) {
-                navigate("/login");
-                return;
-              }
-              navigate(`/votings`);
-              navigate(`/votings/${hotVotingList[index].id}`);
-            }}
-          >
-            →
-          </Arrow>
-        </CardContainer>
+        mobile ? (
+          <VotingCardMobile index={index} />
+        ) : (
+          <CardContainer>
+            <Index>{index + 1}</Index>
+            <ContentBox>
+              <Row>
+                <Title>{hotVotingList[index]?.subject}</Title>
+                <Badges>
+                  {hotVotingList[index]?.isSecret ? (
+                    <Badge $isSecret={hotVotingList[index]?.isSecret}>비밀투표</Badge>
+                  ) : (
+                    <Badge $isSecret={hotVotingList[index]?.isSecret}>공개투표</Badge>
+                  )}
+                </Badges>
+              </Row>
+              <Row>
+                <Period>
+                  투표일: {hotVotingList[index]?.start} ~ {hotVotingList[index]?.end}
+                </Period>
+              </Row>
+              <Row>
+                <Total>투표수: {hotVotingList[index]?.total}</Total>
+              </Row>
+            </ContentBox>
+            <Arrow
+              onClick={() => {
+                const login = localStorage.getItem("id");
+                if (!login) {
+                  navigate("/login");
+                  return;
+                }
+                navigate(`/votings`);
+                navigate(`/votings/${hotVotingList[index].id}`);
+              }}
+            >
+              →
+            </Arrow>
+          </CardContainer>
+        )
+      ) : mobile ? (
+        <VotingCardMobile index={index} />
       ) : (
         <CardContainer>
           <Index>{index + 1}</Index>

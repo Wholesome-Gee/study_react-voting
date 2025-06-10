@@ -7,16 +7,18 @@ import Navigation from "../components/Navigation";
 import { Link, useMatch, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useMediaQuery } from "react-responsive";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 const Background = styled.div`
-  width: 100%;
+  width: 100vw;
+  min-width: 375px;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 const Slider = styled.div`
   width: 100%;
-  height: 550px;
   position: relative;
   overflow: hidden;
 `;
@@ -26,19 +28,6 @@ const SlideImg = styled(motion.div)<{ url: string }>`
   position: absolute;
   background: url(${(props) => props.url}) no-repeat center center;
   background-size: cover;
-`;
-const SlideBox = styled(motion.div)`
-  width: 100%;
-  height: 100%;
-  display: flex;
-`;
-const SlideItem = styled(motion.div)`
-  width: 1920px;
-  border: 1px solid white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 60px;
 `;
 const PrevBtn = styled.div`
   margin: auto;
@@ -94,15 +83,18 @@ const Banner = styled.div`
 `;
 const Container = styled.div`
   width: 1200px;
+  min-width: 300px;
 `;
 const RecommendSection = styled.div`
+  margin-bottom: 60px;
   display: flex;
+  gap: 0 50px;
 `;
-const RecommendHot = styled.div`
-  padding: 60px 30px;
+const HotVotings = styled.div`
+  padding-top: 60px;
   width: 100%;
 `;
-const RecommendAbout = styled(RecommendHot)``;
+const AboutVotings = styled(HotVotings)``;
 
 const SectionTItle = styled.div`
   margin-bottom: 16px;
@@ -129,11 +121,9 @@ const VotingCardList = styled.div`
   align-items: flex-start;
   gap: 1rem;
 `;
-const EndVotingSection = styled.div`
-  width: 100%;
-  padding: 60px 30px;
-`;
+const EndVotingSection = styled.div``;
 const EndVotingList = styled.div`
+  margin-bottom: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -151,6 +141,15 @@ const slideVariants = {
 };
 
 function Home() {
+  const desktop = useMediaQuery({
+    query: "(min-width: 1200px)",
+  });
+  const tablet = useMediaQuery({
+    query: "(min-width: 768px)",
+  });
+  const mobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
   const matchHome = useMatch("/");
   const navigate = useNavigate();
   const sortedVotingList = useRecoilValue(sortedByTotalVotings);
@@ -198,7 +197,7 @@ function Home() {
     <>
       <Navigation />
       <Background>
-        <Slider>
+        <Slider style={{ height: mobile ? "350px" : "550px" }}>
           <AnimatePresence
             initial={false}
             onExitComplete={() => {
@@ -221,8 +220,26 @@ function Home() {
               ) : null
             )}
           </AnimatePresence>
-          <PrevBtn onClick={decreaseSlidePage}>&larr;</PrevBtn>
-          <NextBtn onClick={increaseSlidePage}>&rarr;</NextBtn>
+          <PrevBtn
+            style={{
+              width: mobile ? "45px" : "60px",
+              height: mobile ? "45px" : "60px",
+              fontSize: mobile ? "24px" : "32px",
+            }}
+            onClick={decreaseSlidePage}
+          >
+            <FaChevronLeft />
+          </PrevBtn>
+          <NextBtn
+            style={{
+              width: mobile ? "45px" : "60px",
+              height: mobile ? "45px" : "60px",
+              fontSize: mobile ? "24px" : "32px",
+            }}
+            onClick={increaseSlidePage}
+          >
+            <FaChevronRight />
+          </NextBtn>
         </Slider>
         <Banner>
           <div>
@@ -232,9 +249,9 @@ function Home() {
             </Link>
           </div>
         </Banner>
-        <Container>
-          <RecommendSection>
-            <RecommendHot>
+        <Container style={{ width: desktop ? "1200px" : "90%" }}>
+          <RecommendSection style={{ display: desktop ? "flex" : "block" }}>
+            <HotVotings>
               <SectionTItle>
                 <span>요즘 HOT한 투표 🔥</span>
                 <Link to={"/votings"}>
@@ -246,8 +263,8 @@ function Home() {
                   <VotingCard isHot={true} index={index} key={voting.subject} />
                 ))}
               </VotingCardList>
-            </RecommendHot>
-            <RecommendAbout>
+            </HotVotings>
+            <AboutVotings>
               <SectionTItle>
                 <span>이런 투표는 어때요? 😊</span>
                 <Link to={"/votings"}>
@@ -259,7 +276,7 @@ function Home() {
                   <VotingCard isHot={false} index={index} key={voting.id} />
                 ))}
               </VotingCardList>
-            </RecommendAbout>
+            </AboutVotings>
           </RecommendSection>
           <EndVotingSection>
             <SectionTItle>
