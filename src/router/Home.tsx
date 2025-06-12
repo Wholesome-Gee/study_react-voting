@@ -158,6 +158,7 @@ function Home() {
   const votingList = useRecoilValue(votingsState);
   const [slidePage, setSlidePage] = useState(0);
   const [reverseSlide, setReverseSlide] = useState(false);
+  const [isSliding, setIsSliding] = useState(false);
   const width = window.innerWidth;
   const arr = ["mainbanner1.png", "mainbanner2.jpg", "mainbanner3.jpg"];
 
@@ -186,12 +187,16 @@ function Home() {
   }, [slidePage]);
 
   function increaseSlidePage() {
+    if (isSliding) return;
     setReverseSlide(false);
-    setSlidePage((prev) => (prev === 2 ? 2 : prev + 1));
+    setSlidePage((prev) => (prev === 2 ? 0 : prev + 1));
+    setIsSliding(true);
   }
   function decreaseSlidePage() {
+    if (isSliding) return;
     setReverseSlide(true);
-    setSlidePage((prev) => (prev === 0 ? 0 : prev - 1));
+    setSlidePage((prev) => (prev === 0 ? 2 : prev - 1));
+    setIsSliding(true);
   }
   return (
     <>
@@ -201,7 +206,7 @@ function Home() {
           <AnimatePresence
             initial={false}
             onExitComplete={() => {
-              /*setIsSliding(false)*/
+              setIsSliding(false);
             }}
             custom={{ width, reverseSlide }}
           >

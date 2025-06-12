@@ -2,6 +2,9 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { endVotingsState } from "../atoms";
 import { useMediaQuery } from "react-responsive";
+import { useEffect, useState } from "react";
+//
+//
 
 const CardContainer = styled.div`
   padding: 1rem 0;
@@ -79,7 +82,12 @@ const OtherOption = styled.div`
 interface IProps {
   index: number;
 }
+interface IDisplay {
+  display: string;
+}
+
 function EndVotingCard({ index }: IProps) {
+  const [display, setDisplay] = useState("");
   const desktop = useMediaQuery({
     query: "(min-width: 1200px)",
   });
@@ -92,6 +100,16 @@ function EndVotingCard({ index }: IProps) {
   const endVotingList = useRecoilValue(endVotingsState).slice(0, 3);
   const endVoting = endVotingList[index];
   const sortedEndVoting = [...endVotingList[index].options].sort((a, b) => b.count - a.count);
+
+  useEffect(() => {
+    if (desktop) {
+      setDisplay("desktop");
+    } else if (tablet) {
+      setDisplay("tablet");
+    } else {
+      setDisplay("mobile");
+    }
+  }, []);
 
   return (
     <CardContainer>

@@ -4,10 +4,10 @@ import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import { usersState } from "../atoms";
 import { Link, useNavigate } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
 
 const Form = styled.form`
   margin: 8rem auto 0;
-  width: 500px;
   height: 400px;
   border: 1px solid ${(props) => props.theme.textColor.text};
   display: flex;
@@ -20,14 +20,11 @@ const Form = styled.form`
 const IdInput = styled.div`
   display: flex;
   align-items: center;
-  font-size: 1.2rem;
   span {
-    width: 100px;
     font-weight: 600;
     text-align: center;
   }
   input {
-    width: 210px;
     padding-bottom: 2px;
     border-bottom: 1px solid ${(props) => props.theme.textColor.text};
     color: ${(props) => props.theme.textColor.text};
@@ -65,6 +62,9 @@ interface IForm {
   pw2: string;
 }
 function Join() {
+  const mobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
   const navigate = useNavigate();
   const [userList, setUserList] = useRecoilState(usersState);
   const {
@@ -101,9 +101,12 @@ function Join() {
   return (
     <>
       <Navigation />
-      <Form onSubmit={handleSubmit(successSubmit)}>
+      <Form
+        style={{ width: mobile ? "80%" : "500px", fontSize: mobile ? "0.9rem" : "1.2rem" }}
+        onSubmit={handleSubmit(successSubmit)}
+      >
         <IdInput>
-          <span>ID</span>
+          <span style={{ width: mobile ? "70px" : "100px" }}>ID</span>
           <input
             {...register("id", {
               required: "id를 입력하세요.",
@@ -112,22 +115,25 @@ function Join() {
             placeholder="id를 입력하세요."
             type="text"
             autoComplete="off"
+            style={{ width: mobile ? "160px" : "210px" }}
           />
         </IdInput>
         <PwInput>
-          <span>P/W</span>
+          <span style={{ width: mobile ? "70px" : "100px" }}>P/W</span>
           <input
             {...register("pw1", { required: "비밀번호를 입력하세요." })}
             placeholder="비밀번호를 입력하세요."
             type="password"
+            style={{ width: mobile ? "160px" : "210px" }}
           />
         </PwInput>
         <PwInput>
-          <span>P/W 확인</span>
+          <span style={{ width: mobile ? "70px" : "100px" }}>P/W 확인</span>
           <input
             {...register("pw2", { required: "비밀번호를 입력하세요." })}
             placeholder="비밀번호를 재입력하세요."
             type="password"
+            style={{ width: mobile ? "160px" : "210px" }}
           />
         </PwInput>
         {errors.id?.message ? (

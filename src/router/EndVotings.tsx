@@ -4,28 +4,28 @@ import { endVotingsState, votingsState } from "../atoms";
 import Navigation from "../components/Navigation";
 import styled from "styled-components";
 import { Link, useMatch, useNavigate } from "react-router-dom";
-import Voting from "./Voting";
 import EndVoting from "./EndVoting";
+import { useMediaQuery } from "react-responsive";
 
-const Container = styled.div`
+const Container = styled.div<IDisplay>`
   margin: 0 auto;
   margin-bottom: 80px;
-  width: 1200px;
+  width: ${(props) => (props.display === "desktop" ? "1200px" : "98%")};
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
-const PageTitle = styled.p`
-  margin: 80px 0 60px;
+const PageTitle = styled.p<IDisplay>`
+  margin: ${(props) => (props.display === "desktop" ? "80px 0 60px" : "80px 0 10px")};
   font-size: 2.5rem;
   font-weight: 600;
 `;
-const PageContents = styled.div`
+const PageContents = styled.div<IDisplay>`
   width: 100%;
   padding: 30px;
   padding-bottom: 138px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: ${(props) => (props.display === "desktop" ? "flex-start" : "center")};
   flex-wrap: wrap;
   gap: 44px;
   position: relative;
@@ -56,7 +56,7 @@ const Total = styled.div`
 const DDay = styled.div`
   margin-bottom: 32px;
 `;
-const DetailBtn = styled.div`
+const DetailBtn = styled.div<IDisplay>`
   margin: 0 auto;
   padding: 12px;
   width: 50%;
@@ -64,7 +64,7 @@ const DetailBtn = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  font-size: ${(props) => (props.display === "mobile" ? "20px" : "24px")};
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   background-color: ${(props) => props.theme.textColor.placeholder};
@@ -110,7 +110,21 @@ const VotingMark = styled.div`
   color: #ff8484;
 `;
 
+interface IDisplay {
+  display: string;
+}
+
 function Votings() {
+  const [display, setDisplay] = useState("");
+  const desktop = useMediaQuery({
+    query: "(min-width: 1200px)",
+  });
+  const tablet = useMediaQuery({
+    query: "(min-width: 768px)",
+  });
+  const mobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
   const [count, setCount] = useState(1);
   const [loginUser, setLoginUser] = useState("");
   const [votingMark, setVotingMark] = useState(false);
@@ -125,6 +139,13 @@ function Votings() {
   }
 
   useEffect(() => {
+    if (desktop) {
+      setDisplay("desktop");
+    } else if (tablet) {
+      setDisplay("tablet");
+    } else {
+      setDisplay("mobile");
+    }
     const json = localStorage.getItem("id");
     if (!json) return;
     const session = JSON.parse(json);
@@ -144,11 +165,11 @@ function Votings() {
   return (
     <>
       <Navigation />
-      <Container>
+      <Container display={display}>
         {votingList ? (
           <>
-            <PageTitle>종료된 투표</PageTitle>
-            <PageContents>
+            <PageTitle display={display}>종료된 투표</PageTitle>
+            <PageContents display={display}>
               {visibleVotingList.map((item) => (
                 <Card key={item.id}>
                   {item.isSecret ? (
@@ -161,6 +182,7 @@ function Votings() {
                   <Total>총 투표수 : {item.total}표</Total>
                   <DDay>투표 종료일 : {item.end}</DDay>
                   <DetailBtn
+                    display={display}
                     onClick={() => {
                       navigate(`/votings/end/${item.id}`);
                     }}

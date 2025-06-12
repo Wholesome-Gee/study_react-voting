@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { MdClose } from "react-icons/md";
 import { motion } from "framer-motion";
@@ -40,7 +40,7 @@ const CloseBtn = styled.div`
   left: 0;
   right: 0;
   & svg {
-    font-size: 32px;
+    font-size: 28px;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
   }
@@ -53,6 +53,7 @@ const TopBox = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 50px;
+  font-size: 20px;
 `;
 
 const BottomBox = styled.div`
@@ -61,6 +62,7 @@ const BottomBox = styled.div`
   display: flex;
   justify-content: center;
   gap: 40px;
+  font-size: 20px;
 `;
 const MenuContainerVariant = {
   start: { opacity: 0 },
@@ -75,10 +77,16 @@ const MenuBarVariant = {
 
 interface IProps {
   toggleSetMenu: any;
-  desktop: boolean;
   height: number;
 }
-function SlideMenuBarMobile({ toggleSetMenu, desktop, height }: IProps) {
+function SlideMenuBarMobile({ toggleSetMenu, height }: IProps) {
+  const navigate = useNavigate();
+  function clickLogout() {
+    localStorage.removeItem("id");
+    localStorage.removeItem("pw");
+    navigate("/");
+    alert("로그아웃 되었습니다.");
+  }
   return (
     <>
       <MenuOverlay
@@ -99,26 +107,32 @@ function SlideMenuBarMobile({ toggleSetMenu, desktop, height }: IProps) {
         onClick={(event: React.MouseEvent<HTMLDivElement>) => event.stopPropagation()}
       >
         <CloseBtn>
-          <MdClose onClick={toggleSetMenu} style={{ fontSize: desktop ? "32px" : "28px" }} />
+          <MdClose onClick={toggleSetMenu} />
         </CloseBtn>
         <TopBox>
           <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
-            <p style={{ fontSize: desktop ? "32px" : "20px" }}>투표 등록하기</p>
+            <p>투표 등록하기</p>
           </Link>
           <Link to={"/votings"}>
-            <p style={{ fontSize: desktop ? "32px" : "20px" }}>진행중인 투표</p>
+            <p>진행중인 투표</p>
           </Link>
           <Link to={"/votings/end"}>
-            <p style={{ fontSize: desktop ? "32px" : "20px" }}>종료된 투표</p>
+            <p>종료된 투표</p>
           </Link>
         </TopBox>
         <BottomBox>
-          <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
-            <p style={{ fontSize: desktop ? "32px" : "20px" }}>회원가입하기</p>
-          </Link>
-          <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
-            <p style={{ fontSize: desktop ? "32px" : "20px" }}>로그인하기</p>
-          </Link>
+          {localStorage.getItem("id") ? (
+            <p onClick={clickLogout}>로그아웃</p>
+          ) : (
+            <>
+              <Link to={localStorage.getItem("id") ? "/votings/regist" : "/join"}>
+                <p>회원가입하기</p>
+              </Link>
+              <Link to={localStorage.getItem("id") ? "/votings/regist" : "/login"}>
+                <p>로그인하기</p>
+              </Link>
+            </>
+          )}
         </BottomBox>
       </MenuContainer>
     </>

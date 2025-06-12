@@ -4,11 +4,12 @@ import styled from "styled-components";
 import { votingsState } from "../atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Option from "./Option";
+import { useMediaQuery } from "react-responsive";
 
-const Container = styled.div`
-  padding: 70px 100px;
-  width: 800px;
-  height: 650px;
+const Container = styled.div<IDisplay>`
+  padding: ${(props) => (props.display === "mobile" ? "30px 10px" : "70px 100px")};
+  width: ${(props) => (props.display === "mobile" ? "90%" : "800px")};
+  height: ${(props) => (props.display === "mobile" ? "450px" : "650px")};
   border-radius: 32px;
   position: fixed;
   background-color: ${(props) => props.theme.bgColor};
@@ -30,23 +31,23 @@ const ResultBox = styled.div`
 const Header = styled.div`
   width: 100%;
 `;
-const Badge = styled.span<{ secret: string }>`
-  margin-bottom: 24px;
+const Badge = styled.span<{ secret: string; display: string }>`
+  margin-bottom: ${(props) => (props.display === "mobile" ? "16px" : "24px")};
   padding: 4px 8px;
   border-radius: 8px;
   display: inline-block;
-  font-size: 24px;
+  font-size: ${(props) => (props.display === "mobile" ? "16px" : "24px")};
   background-color: ${(props) => (props.secret === "true" ? props.theme.pointColor.sub : props.theme.pointColor.main)};
 `;
-const Title = styled.div`
-  margin-bottom: 32px;
-  font-size: 32px;
+const Title = styled.div<IDisplay>`
+  margin-bottom: ${(props) => (props.display === "mobile" ? "16px" : "32px")};
+  font-size: ${(props) => (props.display === "mobile" ? "20px" : "32px")};
   font-weight: 600;
 `;
-const Contents = styled.div`
-  margin-bottom: 40px;
-  padding: 25px;
-  width: 420px;
+const Contents = styled.div<IDisplay>`
+  margin-bottom: ${(props) => (props.display === "mobile" ? "30px" : "40px")};
+  padding: ${(props) => (props.display === "mobile" ? "12px" : "25px")};
+  width: ${(props) => (props.display === "mobile" ? "100%" : "420px")};
   max-height: 300px;
   border-radius: 16px;
   display: flex;
@@ -128,8 +129,21 @@ const ExitBtn = styled.button`
   }
 `;
 
+interface IDisplay {
+  display: string;
+}
 // Component
 export default function Voting() {
+  const [display, setDisplay] = useState("");
+  const desktop = useMediaQuery({
+    query: "(min-width: 1200px)",
+  });
+  const tablet = useMediaQuery({
+    query: "(min-width: 768px)",
+  });
+  const mobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
   const matchHome = useMatch("/");
   const navigate = useNavigate();
   const { id } = useParams();
@@ -176,6 +190,13 @@ export default function Voting() {
   }
 
   useEffect(() => {
+    if (desktop) {
+      setDisplay("desktop");
+    } else if (tablet) {
+      setDisplay("tablet");
+    } else {
+      setDisplay("mobile");
+    }
     const json = localStorage.getItem("id");
     if (!json) return;
     const session = JSON.parse(json);
@@ -196,15 +217,17 @@ export default function Voting() {
 
   // JSX
   return (
-    <Container>
+    <Container display={display}>
       {voting ? (
         count === 1 ? (
           <Form onSubmit={handleSubmit}>
             <Header>
-              <Badge secret={String(voting.isSecret)}>{voting.isSecret ? "비밀투표" : "공개투표"}</Badge>
-              <Title>{voting.subject}</Title>
+              <Badge display={display} secret={String(voting.isSecret)}>
+                {voting.isSecret ? "비밀투표" : "공개투표"}
+              </Badge>
+              <Title display={display}>{voting.subject}</Title>
             </Header>
-            <Contents>
+            <Contents display={display}>
               {voting.options.map((option) => (
                 <OptionInput key={option.id}>
                   <input
@@ -225,10 +248,12 @@ export default function Voting() {
         ) : (
           <ResultBox>
             <Header>
-              <Badge secret={String(voting.isSecret)}>{voting.isSecret ? "비밀투표" : "공개투표"}</Badge>
-              <Title>{voting.subject}</Title>
+              <Badge display={display} secret={String(voting.isSecret)}>
+                {voting.isSecret ? "비밀투표" : "공개투표"}
+              </Badge>
+              <Title display={display}>{voting.subject}</Title>
             </Header>
-            <Contents>
+            <Contents display={display}>
               {voting.options.map((item, index) => {
                 const count = item.count;
                 const percent = Math.floor((count / voting.total) * 100); // 70

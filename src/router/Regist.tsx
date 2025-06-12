@@ -6,40 +6,42 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link, useMatch, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { IOption, IVoting, votingsSelector } from "../atoms";
+import { useMediaQuery } from "react-responsive";
 
-const Container = styled.div`
+const Container = styled.div<IDisplay>`
   margin: 0 auto;
-  width: 1200px;
+  width: ${(props) => (props.display === "desktop" ? "1200px" : "90%")};
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
-const PageTitle = styled.p`
-  margin: 80px 0 60px;
-  font-size: 2.5rem;
+const PageTitle = styled.p<IDisplay>`
+  margin: ${(props) => (props.display === "mobile" ? "80px 0 40px" : "80px 0 60px")};
+  font-size: ${(props) => (props.display === "mobile" ? "1.5rem" : "2.5rem")};
   font-weight: 600;
 `;
-const PageContents = styled.form`
+const PageContents = styled.form<IDisplay>`
   padding-bottom: 110px;
-  width: 840px;
-  height: 600px;
+  width: ${(props) => (props.display === "desktop" ? "840px" : "100%")};
+  height: ${(props) => (props.display === "mobile" ? "400px" : "600px")};
   border: 1px solid gray;
   display: flex;
+  justify-content: center;
   align-items: center;
   position: relative;
   overflow: hidden;
 `;
-const Step = styled(motion.h1)`
-  padding: 0 100px;
-  width: 840px;
+const Step = styled(motion.h1)<IDisplay>`
+  padding: ${(props) => (props.display === "mobile" ? "8px" : "0 100px")};
+  width: ${(props) => (props.display === "mobile" ? "99%" : "840px")};
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 60px 0;
 `;
-const StepTitle = styled.div`
+const StepTitle = styled.div<IDisplay>`
   margin-bottom: 2rem;
-  font-size: 2rem;
+  font-size: ${(props) => (props.display === "mobile" ? "1.2rem" : "1.8rem")};
 `;
 const StepContents = styled.div`
   max-height: 260px;
@@ -63,21 +65,21 @@ const StepContents = styled.div`
     background-color: aliceblue;
   }
 `;
-const InputBox = styled.div`
+const InputBox = styled.div<IDisplay>`
   margin-bottom: 1rem;
-  padding: 0 30px;
+  padding: ${(props) => (props.display === "mobile" ? "0 5px" : "0 30px")};
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   & > p {
     margin-right: 8px;
-    font-size: 1.2rem;
+    font-size: ${(props) => (props.display === "mobile" ? "0.9rem" : "1.2rem")};
   }
   & > input {
     margin-right: 8px;
     padding: 4px 2px;
-    width: 270px;
+    width: ${(props) => (props.display === "mobile" ? "230px" : "270px")};
     border-bottom: 1px solid ${(props) => props.theme.textColor.text};
     color: ${(props) => props.theme.textColor.text};
     font-size: 1.1rem;
@@ -149,7 +151,21 @@ const PrevBtn = styled(NextBtn)`
   background-color: ${(props) => props.theme.textColor.placeholder};
 `;
 
+interface IDisplay {
+  display: string;
+}
+
 export default function Regist() {
+  const [display, setDisplay] = useState("");
+  const desktop = useMediaQuery({
+    query: "(min-width: 1200px)",
+  });
+  const tablet = useMediaQuery({
+    query: "(min-width: 768px)",
+  });
+  const mobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
   const matchHome = useMatch("/");
   const navigate = useNavigate();
   const [pageNum, setPageNum] = useState(0); // 0 : 투표제목입력 page // 1: 투표항목입력page // 2: 비밀투표선택page // 3: 완료페이지
@@ -248,6 +264,13 @@ export default function Regist() {
   }
 
   useEffect(() => {
+    if (desktop) {
+      setDisplay("desktop");
+    } else if (tablet) {
+      setDisplay("tablet");
+    } else {
+      setDisplay("mobile");
+    }
     const json = localStorage.getItem("id");
     if (!json) return;
     const session = JSON.parse(json);
@@ -267,36 +290,43 @@ export default function Regist() {
   return (
     <>
       <Navigation />
-      <Container>
-        <PageTitle>투표 등록하기</PageTitle>
+      <Container display={display}>
+        <PageTitle display={display}>투표 등록하기</PageTitle>
         <AnimatePresence>
-          <PageContents onSubmit={handleSubmit(success)}>
+          <PageContents display={display} onSubmit={handleSubmit(success)}>
             {pageNum === 0 ? (
-              <Step>
-                <StepTitle>STEP1. 투표 제목을 입력하세요.</StepTitle>
+              <Step display={display}>
+                <StepTitle display={display}>STEP1. 투표 제목을 입력하세요.</StepTitle>
                 <StepContents>
-                  <InputBox>
+                  <InputBox display={display}>
                     <input {...register("votingTitle")}></input>
                     <span>({watch("votingTitle")?.length || "0"}/16자)</span>
                   </InputBox>
                 </StepContents>
               </Step>
             ) : pageNum === 1 ? (
-              <Step>
-                <StepTitle>STEP2. 투표 항목을 입력하세요.</StepTitle>
-                <StepContents>
+              <Step display={display}>
+                <StepTitle display={display}>STEP2. 투표 항목을 입력하세요.</StepTitle>
+                <StepContents style={{ height: mobile ? "150px" : "auto" }}>
                   {visibleOptions.map((number, index) => {
                     const inputName = `option${number}`;
                     const value = watch(inputName) || "";
                     return (
                       <div key={number + ""}>
-                        <InputBox>
+                        <InputBox display={display}>
                           <DeleteBtn onClick={handleClickDeleteBtn} id={`option${number}`}>
                             -
                           </DeleteBtn>
-                          <p>{index + 1}번 항목 : </p>
-                          <input {...register(inputName)}></input>
-                          <span>({value.length || "0"}/10자)</span>
+                          <p style={{ fontSize: mobile ? "0.8rem" : "1.2rem" }}>{index + 1}번 항목 : </p>
+                          <input
+                            {...register(inputName)}
+                            style={{
+                              width: mobile ? "140px" : tablet ? "220px" : "270px",
+                              padding: mobile ? "1px 2px" : tablet ? "2px 2px" : "4px 2px",
+                              fontSize: mobile ? "0.9rem" : tablet ? "1rem" : "1.1rem",
+                            }}
+                          ></input>
+                          <span style={{ fontSize: mobile ? "0.7rem" : "0.9rem" }}>({value.length || "0"}/10자)</span>
                         </InputBox>
                       </div>
                     );
@@ -305,10 +335,10 @@ export default function Regist() {
                 <AddBtn onClick={handleClickAddBtn}>+</AddBtn>
               </Step>
             ) : pageNum === 2 ? (
-              <Step>
-                <StepTitle>STEP3. 비밀투표로 진행하시겠습니까?</StepTitle>
+              <Step display={display}>
+                <StepTitle display={display}>STEP3. 비밀투표로 진행하시겠습니까?</StepTitle>
                 <StepContents>
-                  <InputBox>
+                  <InputBox display={display}>
                     <Labels>
                       <input
                         type="radio"
@@ -335,8 +365,8 @@ export default function Regist() {
                 </StepContents>
               </Step>
             ) : pageNum === 3 ? (
-              <Step>
-                <StepTitle>투표등록이 완료 되었습니다.</StepTitle>
+              <Step display={display}>
+                <StepTitle display={display}>투표등록이 완료 되었습니다.</StepTitle>
               </Step>
             ) : null}
             <Btns>

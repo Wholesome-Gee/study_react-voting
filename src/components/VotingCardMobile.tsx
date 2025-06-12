@@ -85,7 +85,7 @@ function VotingCardMobile({ index }: IProps) {
         </Period>
       </Row>
       <Row>
-        <Total>투표수: {hotVotingList[index]?.total}</Total>
+        <Total>투표수: {hotVotingList[index]?.total}표</Total>
       </Row>
     </CardContainer>
   );

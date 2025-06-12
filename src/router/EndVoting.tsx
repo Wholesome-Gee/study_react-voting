@@ -5,10 +5,11 @@ import { endVotingsState, sortedEndVoting, votingsState } from "../atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Option from "./Option";
 import { a } from "framer-motion/dist/types.d-CtuPurYT";
+import { useMediaQuery } from "react-responsive";
 
-const Container = styled.div`
+const Container = styled.div<IDisplay>`
   padding: 70px 100px;
-  width: 800px;
+  width: ${(props) => (props.display === "mobile" ? "100%" : "800px")};
   height: 650px;
   border-radius: 32px;
   position: fixed;
@@ -123,16 +124,35 @@ const ExitBtn = styled.button`
   }
 `;
 
+interface IDisplay {
+  display: string;
+}
 // Component
 export default function EndVoting() {
+  const [display, setDisplay] = useState("");
+  const desktop = useMediaQuery({
+    query: "(min-width: 1200px)",
+  });
+  const tablet = useMediaQuery({
+    query: "(min-width: 768px)",
+  });
+  const mobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
   const matchHome = useMatch("/");
   const navigate = useNavigate();
   const { id } = useParams();
   const votingList = useRecoilValue(sortedEndVoting);
-  console.log(votingList);
   const voting = votingList.find((voting) => voting.id === id);
 
   useEffect(() => {
+    if (desktop) {
+      setDisplay("desktop");
+    } else if (tablet) {
+      setDisplay("tablet");
+    } else {
+      setDisplay("mobile");
+    }
     const json = localStorage.getItem("id");
     if (!json) return;
     else {
@@ -152,7 +172,7 @@ export default function EndVoting() {
 
   // JSX
   return (
-    <Container>
+    <Container display={display}>
       {voting ? (
         <ResultBox>
           <Header>

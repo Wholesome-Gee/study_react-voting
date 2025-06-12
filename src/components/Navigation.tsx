@@ -134,7 +134,7 @@ export default function Navigation() {
       <AnimatePresence>
         {clickMenu ? (
           mobile ? (
-            <SlideMenuBarMobile desktop={desktop} height={height} toggleSetMenu={toggleSetMenu} />
+            <SlideMenuBarMobile height={height} toggleSetMenu={toggleSetMenu} />
           ) : (
             <SlideMenuBar desktop={desktop} toggleSetMenu={toggleSetMenu} />
           )

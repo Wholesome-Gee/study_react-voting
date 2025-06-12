@@ -4,11 +4,11 @@ import styled from "styled-components";
 import { useRecoilValue } from "recoil";
 import { usersState } from "../atoms";
 import { Link, useMatch, useNavigate } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
 
 const Container = styled.form`
   margin: 8rem auto 0;
   margin-top: 8rem;
-  width: 500px;
   height: 400px;
   border: 1px solid ${(props) => props.theme.textColor.text};
   display: flex;
@@ -82,6 +82,9 @@ interface IForm {
 
 //
 function Login() {
+  const mobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
   const navigate = useNavigate();
   const homeMatch = useMatch("/");
   const userList = useRecoilValue(usersState);
@@ -131,7 +134,7 @@ function Login() {
   return (
     <>
       <Navigation />
-      <Container onSubmit={handleSubmit(success)}>
+      <Container style={{ width: mobile ? "80%" : "500px" }} onSubmit={handleSubmit(success)}>
         <IdInput>
           <InputName>ID</InputName>
           <input
